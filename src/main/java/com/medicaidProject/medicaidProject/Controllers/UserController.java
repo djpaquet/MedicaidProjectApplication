@@ -47,4 +47,17 @@ public class UserController {
         model.addAttribute("user", user);
         return "user/user-dashboard";
     }
+
+    @GetMapping("user-employment-verification-form")
+    public String employmentVerification(HttpSession session, Model model) {
+            User user = (User) session.getAttribute("user");
+
+            if (user == null) {
+                return "redirect:/user/sign-up"; // or show an error page
+            }
+
+            model.addAttribute("user", user);
+            return "user/user-employment-verification-form";
+        }
+
 }
