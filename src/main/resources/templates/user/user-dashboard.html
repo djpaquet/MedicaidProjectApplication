@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="~{fragments :: head}">
+    <title>Medicaid Employment Verification App</title>
+    <style>
+        .InfoListItem {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .InfoListItem input {
+            width: 60%;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .EditButton {
+            margin-top: 20px;
+        }
+
+        .EditButton button {
+            width: auto;
+            padding: 10px 20px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body class="container">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/user/user-dashboard}">Dashboard</a>
+    </div>
+</nav>
+
+<header>
+    <h1>Welcome, <span th:text="${user.firstName}">User</span>!</h1>
+</header>
+
+<div class="InfoList">
+    <!-- User Info -->
+    <div class="InfoListCategory">
+        <h2>Contact Information:</h2>
+
+        <div class="InfoListItem">
+            <p>Email:</p>
+            <span class="view-mode" th:text="${user.email}">email@example.com</span>
+            <input class="edit-mode" type="email" th:value="${user.email}" style="display:none;">
+        </div>
+
+        <div class="InfoListItem">
+            <p>Phone:</p>
+            <span class="view-mode" th:text="${user.phone}">(000) 000-0000</span>
+            <input class="edit-mode" type="text" th:value="${user.phone}" style="display:none;">
+        </div>
+    </div>
+
+    <!-- Address Fields (not bound to user class) -->
+    <div class="InfoListCategory">
+        <h2>Address:</h2>
+
+        <div class="InfoListItem">
+            <p>Street Address:</p>
+            <span class="view-mode">123 Main St</span>
+            <input class="edit-mode" type="text" value="123 Main St" style="display:none;">
+        </div>
+
+        <div class="InfoListItem">
+            <p>City:</p>
+            <span class="view-mode">St. Louis</span>
+            <input class="edit-mode" type="text" value="St. Louis" style="display:none;">
+        </div>
+
+        <div class="InfoListItem">
+            <p>ZIP:</p>
+            <span class="view-mode">63101</span>
+            <input class="edit-mode" type="text" value="63101" style="display:none;">
+        </div>
+
+        <div class="InfoListItem">
+            <p>State:</p>
+            <span class="view-mode">MO</span>
+            <input class="edit-mode" type="text" value="MO" style="display:none;">
+        </div>
+    </div>
+
+    <!-- Personal Info -->
+    <div class="InfoListCategory">
+        <h2>Personal Details:</h2>
+
+        <div class="InfoListItem">
+            <p>First Name:</p>
+            <span class="view-mode" th:text="${user.firstName}">First</span>
+            <input class="edit-mode" type="text" th:value="${user.firstName}" style="display:none;">
+        </div>
+
+        <div class="InfoListItem">
+            <p>Last Name:</p>
+            <span class="view-mode" th:text="${user.lastName}">Last</span>
+            <input class="edit-mode" type="text" th:value="${user.lastName}" style="display:none;">
+        </div>
+
+        <div class="InfoListItem">
+            <p>Date of Birth:</p>
+            <span class="view-mode" th:text="${#temporals.format(user.dateOfBirth, 'MM/dd/yyyy')}">01/01/1990</span>
+            <input class="edit-mode" type="date" th:value="${user.dateOfBirth}" style="display:none;">
+        </div>
+    </div>
+
+    <!-- Edit Buttons -->
+    <div class="EditButton">
+        <button id="editBtn">Edit Details</button>
+        <button id="saveBtn" style="display:none;">Save</button>
+        <button id="cancelBtn" style="display:none;">Cancel</button>
+    </div>
+</div>
+
+<div class="AppStatus">
+    <h2>Application Status:</h2>
+    <h2>Incomplete</h2>
+</div>
+
+<script>
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    const viewModeElements = document.querySelectorAll(".view-mode");
+    const editModeElements = document.querySelectorAll(".edit-mode");
+
+    editBtn.addEventListener("click", () => {
+        viewModeElements.forEach(el => el.style.display = "none");
+        editModeElements.forEach(el => el.style.display = "inline-block");
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-block";
+        cancelBtn.style.display = "inline-block";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        viewModeElements.forEach(el => el.style.display = "inline-block");
+        editModeElements.forEach(el => el.style.display = "none");
+        editBtn.style.display = "inline-block";
+        saveBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+    });
+
+    saveBtn.addEventListener("click", () => {
+        viewModeElements.forEach((el, idx) => {
+            el.textContent = editModeElements[idx].value;
+        });
+        cancelBtn.click();
+    });
+</script>
+
+</body>
+</html>

@@ -1,22 +1,52 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-<head th:replace="fragments :: head">
+<head th:replace="~{fragments :: head}">
     <title>Medicaid Employment Verification App</title>
 </head>
-<body class="container-fluid">
-
-
-<div class="jumbotron" align="center" >
-    <h1 class="display-3">Medicaid Employment Verification App</h1>
-    <p class="lead">Missouri Medicaid Verification Portal</p>
-    <hr class="my-4"/>
-
-    <p class="lead">
-        <a class="btn btn-primary btn-lg" role="button" href="/user/sign-up">Sign up!</a>
-    </p>
-
-</div>
-
-
+<body>
+<h1>Missouri Medicaid Verification Portal</h1>
+<section class="main">
+    <div class="container">
+        <div class ="wrapper">
+            <!-- Description -->
+            <div class="coldescription">
+                <h2>
+                    Welcome to the Missouri Medicaid Employment Verification Portal
+                </h2>
+                <p>
+                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+                </p>
+            </div>
+            <!-- Form -->
+            <div class="colform">
+                <h2>
+                    Sign-In Below
+                </h2>
+                <form th:action="@{/user/login}" th:object="${user}" method="post">
+                    <label class="form" th:for="username">
+                        Username:
+                    </label>
+                    <input type="text" th:field="*{username}" placeholder="Enter Username" required />
+                    <label class="form" th:for="password">
+                        Password:
+                    </label>
+                    <input type="password" th:field="*{password}" placeholder="Enter Password" required />
+                    <button type="submit">
+                        Sign in
+                    </button>
+                    <a href="#!">
+                        Forgot password?
+                    </a>
+                    <div class="register">
+                        <p> Don't have an account? </p>
+                        <button type="button" onclick="window.location.href='/user/sign-up'">
+                            Register Here
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>
