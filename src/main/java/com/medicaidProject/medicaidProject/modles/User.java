@@ -1,3 +1,5 @@
+/*Developed by Dana Paquet*/
+
 package com.medicaidProject.medicaidProject.modles;
 import java.time.LocalDate;
 public class User {
