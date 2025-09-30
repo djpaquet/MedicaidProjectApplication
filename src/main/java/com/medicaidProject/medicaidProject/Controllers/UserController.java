@@ -31,11 +31,12 @@ public class UserController {
     }
 
     @RequestMapping(value="sign-up", method = RequestMethod.POST)
-    public String processSignUp(Model model, @ModelAttribute User user, String verifyPassword, Errors errors, HttpSession session) {
-        // Store the user in session
+    public String processSignUp(Model model,@ModelAttribute User user,Errors errors,HttpSession session) {
+
         session.setAttribute("user", user);
         return "redirect:/user/user-dashboard";
     }
+
 
     @GetMapping("user-dashboard")
     public String userDashboard(HttpSession session, Model model) {
