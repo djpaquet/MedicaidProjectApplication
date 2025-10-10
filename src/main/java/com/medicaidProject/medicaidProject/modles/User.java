@@ -10,10 +10,13 @@ public class User {
     private String phone;
     private String email;
     private String username;
+    private String pin;
+
+    private String employerTaxId;
     private String password;
     private String verifyPassword;
 
-    public User(String lastName, String firstName, LocalDate dateOfBirth, String phone, String username, String email, String password){
+    public User(String lastName, String firstName, LocalDate dateOfBirth, String phone, String username, String email, String password, String pin){
         this();
         this.username = username;
         this.email = email;
@@ -22,6 +25,7 @@ public class User {
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
+        this.pin = pin;
     }
 
     public User(){}
@@ -93,4 +97,12 @@ public class User {
     public void setVerifyPassword(String verifyPassword) {
         this.verifyPassword = verifyPassword;
     }
+
+    public String getPin() {return pin;}
+
+    public void setPin(String pin) {this.pin = pin;}
+
+    public String getEmployerTaxId() {return pin;}
+
+    public void getEmployerTaxId(String pin) {this.pin = pin;}
 }
