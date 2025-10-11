@@ -26,6 +26,7 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;
         this.pin = pin;
+        this.employerTaxId = getEmployerTaxId();
     }
 
     public User(){}
@@ -101,6 +102,10 @@ public class User {
     public String getPin() {return pin;}
 
     public void setPin(String pin) {this.pin = pin;}
+
+    public void setEmployerTaxId(String employerTaxId) {
+        this.employerTaxId = employerTaxId;
+    }
 
     public String getEmployerTaxId() {return pin;}
 
