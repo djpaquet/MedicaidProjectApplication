@@ -1,0 +1,108 @@
+<!-- Developed by Bhatti Rajwinder -->
+<!-- Updated by Dana Paquet -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="~{fragments :: head}">
+    <title>Employer Sign up</title>
+<body class="container">
+<header>
+    <h1>Employer Dashboard: <span th:text="${employer.employerName}">Employer</span></h1>
+</header>
+<div class="InfoList">
+    <div class="InfoListCategory">
+        <h2>Contact Information:</h2>
+        <div class="InfoListItem">
+            <p>First Name:</p>
+            <span class="view-mode" th:text="${employer.firstName}">First</span>
+            <input class="edit-mode" type="text" th:value="${employer.firstName}" style="display:none;">
+        </div>
+        <div class="InfoListItem">
+            <p>Last Name:</p>
+            <span class="view-mode" th:text="${employer.lastName}">Last</span>
+            <input class="edit-mode" type="text" th:value="${employer.lastName}" style="display:none;">
+        </div>
+        <div class="InfoListItem">
+            <p>Email:</p>
+            <span class="view-mode" th:text="${employer.email}">email@example.com</span>
+            <input class="edit-mode" type="email" th:value="${employer.email}" style="display:none;" />
+        </div>
+        <p>Phone:</p>
+        <span class="view-mode" th:text="${employer.phone}">(000) 000-0000</span>
+        <input class="edit-mode" type="text" th:value="${employer.phone}" style="display:none;">
+    </div>
+    <div class="InfoListCategory">
+        <h2>Address:</h2>
+        <div class="InfoListItem">
+            <p>Street Address:</p>
+            <span class="view-mode" th:text="${employer.address}">address</span>
+            <input class="edit-mode" type="text" th:value="${employer.address}" style="display:none;" />
+        </div>
+        <div class="InfoListItem">
+            <p>City:</p>
+            <span class="view-mode" th:text="${employer.city}">city</span>
+            <input class="edit-mode" type="text" th:value="${employer.city}" style="display:none;" />
+        </div>
+        <div class="InfoListItem">
+            <p>ZIP:</p>
+            <span class="view-mode" th:text="${employer.zip}">address</span>
+            <input class="edit-mode" type="text" th:value="${employer.zip}" style="display:none;" />
+        </div>
+        <div class="InfoListItem">
+            <p>State:</p>
+            <span class="view-mode" th:text="${employer.state}">address</span>
+            <input class="edit-mode" type="text" th:value="${employer.state}" style="display:none;" />
+        </div>
+    </div>
+    <div class="InfoListCategory">
+        <h2>Employer Details:</h2>
+        <p>Company Name:</p>
+        <span class="view-mode" th:text="${employer.employerName}">address</span>
+        <input class="edit-mode" type="text" th:value="${employer.employerName}" style="display:none;" />
+        <p>Employer Tax ID:</p>
+        <span class="view-mode" th:text="${employer.employerTaxId}">address</span>
+        <input class="edit-mode" type="text" th:value="${employer.employerTaxId}" style="display:none;" />
+    </div>
+    <!-- Edit Buttons -->
+    <div class="EditButton">
+        <button id="editBtn">Edit Details</button>
+        <button id="saveBtn" style="display:none;">Save</button>
+        <button id="cancelBtn" style="display:none;">Cancel</button>
+    </div>
+</div>
+<script>
+         const editBtn = document.getElementById("editBtn");
+         const saveBtn = document.getElementById("saveBtn");
+         const cancelBtn = document.getElementById("cancelBtn");
+
+         const viewModeElements = document.querySelectorAll(".view-mode");
+         const editModeElements = document.querySelectorAll(".edit-mode");
+
+         editBtn.addEventListener("click", () => {
+             viewModeElements.forEach(el => el.style.display = "none");
+             editModeElements.forEach(el => el.style.display = "inline-block");
+             editBtn.style.display = "none";
+             saveBtn.style.display = "inline-block";
+             cancelBtn.style.display = "inline-block";
+         });
+
+         cancelBtn.addEventListener("click", () => {
+             viewModeElements.forEach(el => el.style.display = "inline-block");
+             editModeElements.forEach(el => el.style.display = "none");
+             editBtn.style.display = "inline-block";
+             saveBtn.style.display = "none";
+             cancelBtn.style.display = "none";
+         });
+
+         saveBtn.addEventListener("click", () => {
+             viewModeElements.forEach((el, idx) => {
+                 const input = editModeElements[idx];
+                 if (input) {
+                     el.textContent = input.value;
+                 }
+             });
+             cancelBtn.click();
+         });
+
+      </script>
+</body>
+</html>

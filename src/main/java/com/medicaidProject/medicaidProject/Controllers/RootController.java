@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RootController {
 
     @RequestMapping("/")
-    public String redirectToUser() {
-        return "redirect:/user";  // maps to root /
+    public String showLandingPage() {
+        return "root/index";  // templates/root/index.html
     }
+
 }
+
+
+
 

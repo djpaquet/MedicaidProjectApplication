@@ -16,6 +16,11 @@ import jakarta.servlet.http.HttpSession;
 
 public class UserController {
 
+    @RequestMapping(value = "index", method = RequestMethod.GET)
+    public String userIndex(Model model) {
+        model.addAttribute("user", new User());
+        return "user/index";
+    }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String index(Model model){
@@ -32,7 +37,10 @@ public class UserController {
 
     @RequestMapping(value="sign-up", method = RequestMethod.POST)
     public String processSignUp(Model model,@ModelAttribute User user,Errors errors,HttpSession session) {
-
+        if (!user.getPassword().equals(user.getVerifyPassword())) {
+            model.addAttribute("error", "Passwords do not match.");
+            return "user/sign-up";
+        }
         session.setAttribute("user", user);
         return "redirect:/user/user-dashboard";
     }
