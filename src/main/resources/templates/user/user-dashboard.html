@@ -5,6 +5,72 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:replace="~{fragments :: head}">
+    <style>
+         .InfoListItem {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 20px;
+         }
+
+         .InfoListItem p {
+            margin: 0;
+            padding-right: 10px;
+            width: 30%;
+         }
+
+         .InfoListItem input {
+             width: 65%;
+             padding: 8px;
+             border-radius: 6px;
+             border: 1px solid #ccc;
+             font-size: 14px;
+         }
+
+         .InfoListCategory {
+            margin-bottom: 30px;
+         }
+
+         .EditButton {
+             margin-top: 20px;
+         }
+
+         .EditButton button {
+             width: auto;
+             padding: 10px 20px;
+             margin-right: 10px;
+         }
+
+         .masked-id {
+             font-family: monospace;
+             cursor: pointer;
+         }
+
+         .ssn-container {
+             display: flex;
+             align-items: center;
+             gap: 10px;
+         }
+
+         .show-pin-label {
+             font-size: 12px;
+             display: flex;
+             align-items: center;
+             cursor: pointer;
+         }
+
+         h1, h2 {
+            margin-bottom: 15px;
+         }
+
+         .AppStatus h2 {
+            margin-top: 20px;
+         }
+
+         .navbar {
+            margin-bottom: 20px;
+         }
+     </style>
 </head>
 <body class="container">
 <!-- Navbar -->
