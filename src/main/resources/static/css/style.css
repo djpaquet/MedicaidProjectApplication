@@ -52,6 +52,65 @@ h1 {
   gap: 20px;
 }
 
+.section {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.8rem;
+    }
+
+.label {
+      font-weight: bold;
+    }
+
+ .dashboard-container {
+      display: none;
+      background: #fff;
+      max-width: 650px;
+  }
+
+h2 {
+      text-align: center;
+      color: #2575fc;
+      margin-bottom: 1rem;
+  }
+
+.InfoListItem {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+          }
+.InfoListItem input {
+              width: 60%;
+              padding: 6px;
+              border-radius: 6px;
+              border: 1px solid #ccc;
+              font-size: 14px;
+          }
+.EditButton {
+              margin-top: 20px;
+          }
+.EditButton button {
+              width: auto;
+              padding: 10px 20px;
+              margin-right: 10px;
+          }
+.masked-id {
+              font-family: monospace;
+              cursor: pointer;
+          }
+.ssn-container {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+          }
+.show-pin-label {
+              font-size: 12px;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+          }
+
 /* Description Column */
 .coldescription {
   flex: 1 1 45%;
@@ -396,3 +455,4 @@ legend {
 input[type="password"], input[type="text"] {
   cursor: pointer;
 }
+

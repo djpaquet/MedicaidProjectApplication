@@ -3,16 +3,18 @@
 
 package com.medicaidProject.medicaidProject.modles;
 import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class User {
     private int id;
     private String firstName;
     private String lastName;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private String phone;
     private String email;
     private String username;
     private String pin;
-
     private String employerTaxId;
     private String password;
     private String verifyPassword;
@@ -108,7 +110,7 @@ public class User {
         this.employerTaxId = employerTaxId;
     }
 
-    public String getEmployerTaxId() {return pin;}
+    public String getEmployerTaxId() {return employerTaxId;}
 
-    public void getEmployerTaxId(String pin) {this.pin = pin;}
+    public void getEmployerTaxId(String employerTaxId) {this.employerTaxId = employerTaxId;}
 }

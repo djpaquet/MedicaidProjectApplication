@@ -1,0 +1,60 @@
+<!-- Developed by Kaye Jamerson -->
+<!-- Updated by Dana Paquet -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="~{fragments :: head}">
+    <title>Medicaid Employer Portal</title>
+</head>
+<body>
+<h1>Missouri Medicaid Employer Portal</h1>
+<section class="main">
+    <div class="container">
+        <div class ="wrapper">
+            <!-- Description -->
+            <div class="coldescription">
+                <h2>
+                    Welcome to the Missouri Medicaid Employer Verification Portal
+                </h2>
+                    Thank you for partnering with us to support the Missouri Medicaid program.
+                        <br><br>
+                    This portal is designed for employers to securely verify the employment status of individuals applying for Medicaid benefits.
+                    Your role is essential in helping ensure accurate and timely eligibility determinations.
+                        <br><br>
+                    By logging in, you can view requests for employment verification, confirm applicant details, and submit responses quickly and securely.
+                        <br><br>
+                    Your participation helps streamline the verification process and ensures access to vital healthcare services for those who qualify.
+            </div>
+            <!-- Form -->
+            <div class="colform">
+                <h2>
+                    Sign-In Below
+                </h2>
+                <form th:action="@{/employer/login}" th:object="${employer}" method="post">
+                    <label class="form" th:for="username">
+                        Username:
+                    </label>
+                    <input type="text" th:field="*{email}" placeholder="Enter Email" required />
+                    <label class="form" th:for="password">
+                        Password:
+                    </label>
+                    <input type="password" th:field="*{password}" placeholder="Enter Password" required />
+                    <button type="submit">
+                        Sign in
+                    </button>
+                    <a href="#!">
+                        Forgot password?
+                    </a>
+                    <div class="register">
+                        <p> Don't have an account? </p>
+                        <button type="button" onclick="window.location.href='/employer/sign-up'">
+                            Employers Register Here
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
