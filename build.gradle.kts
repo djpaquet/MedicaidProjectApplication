@@ -10,7 +10,7 @@ description = "Medicaid Project"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion.set(JavaLanguageVersion.of(17))
 	}
 }
 
@@ -25,6 +25,10 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("mysql:mysql-connector-java:8.0.33")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
+	implementation ("org.springframework.security:spring-security-crypto")
 }
 
 tasks.withType<Test> {

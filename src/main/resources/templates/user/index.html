@@ -26,10 +26,11 @@
                     Sign-In Below
                 </h2>
                 <form th:action="@{/user/login}" th:object="${user}" method="post">
-                    <label class="form" th:for="username">
-                        Username:
-                    </label>
-                    <input type="text" th:field="*{username}" placeholder="Enter Username" required />
+
+                    <p th:if="${error}" style="color:red;" th:text="${error}"></p>
+
+                    <label class="form" th:for="username">Username:</label>
+                    <input type="text" id="username" th:field="*{username}" placeholder="Enter Username" required />
                     <label class="form" th:for="password">
                         Password:
                     </label>
@@ -42,8 +43,9 @@
                     </a>
                     <div class="register">
                         <p> Don't have an account? </p>
-                        <button type="button" onclick="window.location.href='/user/sign-up'">
-                            Applicants Register Here
+                        <a th:href="@{/user/sign-up}"><button type="button">Applicants Register Here</button></a>
+
+                        Applicants Register Here
                         </button>
                     </div>
                 </form>
