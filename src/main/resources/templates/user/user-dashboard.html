@@ -1,77 +1,10 @@
 <!-- Developed by Darren Wunderlich-->
 <!-- Updated by Dana Paquet -->
-<!-- v2 added masked pin field Updated by Dana Paquet -->
+<!-- v3: Unified User + Address Save -->
 
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org/">
-<head th:replace="~{fragments :: head}">
-    <style>
-         .InfoListItem {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             margin-bottom: 20px;
-         }
-
-         .InfoListItem p {
-            margin: 0;
-            padding-right: 10px;
-            width: 30%;
-         }
-
-         .InfoListItem input {
-             width: 65%;
-             padding: 8px;
-             border-radius: 6px;
-             border: 1px solid #ccc;
-             font-size: 14px;
-         }
-
-         .InfoListCategory {
-            margin-bottom: 30px;
-         }
-
-         .EditButton {
-             margin-top: 20px;
-         }
-
-         .EditButton button {
-             width: auto;
-             padding: 10px 20px;
-             margin-right: 10px;
-         }
-
-         .masked-id {
-             font-family: monospace;
-             cursor: pointer;
-         }
-
-         .ssn-container {
-             display: flex;
-             align-items: center;
-             gap: 10px;
-         }
-
-         .show-pin-label {
-             font-size: 12px;
-             display: flex;
-             align-items: center;
-             cursor: pointer;
-         }
-
-         h1, h2 {
-            margin-bottom: 15px;
-         }
-
-         .AppStatus h2 {
-            margin-top: 20px;
-         }
-
-         .navbar {
-            margin-bottom: 20px;
-         }
-     </style>
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
 <body class="container">
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
@@ -88,113 +21,111 @@
                     <a class="navbar-brand" th:href="@{/user/user-employment-verification-form}">Employment Verification</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/user/index}">Home</a>
+                    <a class="nav-link" th:href="@{/user/logout}">Log Out</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
+
 <header>
     <h1>Welcome, <span th:text="${user.firstName}">User</span>!</h1>
 </header>
-<div class="InfoList">
-    <!-- User Info -->
-    <div class="InfoListCategory">
-        <h2>Contact Information:</h2>
-        <div class="InfoListItem">
-            <p>Email:</p>
-            <span class="view-mode" th:text="${user.email}">email@example.com</span>
-            <input class="edit-mode" type="email" th:value="${user.email}" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>Phone:</p>
-            <span class="view-mode" th:text="${user.phone}">(000) 000-0000</span>
-            <input class="edit-mode" type="text" th:value="${user.phone}" style="display:none;">
-        </div>
-    </div>
 
-    <!-- Address Fields -->
-    <div class="InfoListCategory">
-        <h2>Address:</h2>
-        <div class="InfoListItem">
-            <p>Street Address:</p>
-            <span class="view-mode">123 Main St</span>
-            <input class="edit-mode" type="text" value="123 Main St" style="display:none;">
+<!-- -------------- FORM TO UPDATE USER + ADDRESS ----------------- -->
+<div class="container-fluid">
+<form th:action="@{/user/user-dashboard/save}" method="post">
+    <div class="InfoList">
+        <!-- User Info -->
+        <div class="InfoListCategory">
+            <h2>Contact Information:</h2>
+            <div class="InfoListItem">
+                <p>Email:</p>
+                <span class="view-mode" th:text="${user.email}">email@example.com</span>
+                <input class="edit-mode" type="email" name="email" th:value="${user.email}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>Phone:</p>
+                <span class="view-mode" th:text="${user.phone}">(000) 000-0000</span>
+                <input class="edit-mode" type="text" name="phone" th:value="${user.phone}" style="display:none;">
+            </div>
         </div>
-        <div class="InfoListItem">
-            <p>City:</p>
-            <span class="view-mode">St. Louis</span>
-            <input class="edit-mode" type="text" value="St. Louis" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>ZIP:</p>
-            <span class="view-mode">63101</span>
-            <input class="edit-mode" type="text" value="63101" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>State:</p>
-            <span class="view-mode">MO</span>
-            <input class="edit-mode" type="text" value="MO" style="display:none;">
-        </div>
-    </div>
 
-    <!-- Personal Info -->
-    <div class="InfoListCategory">
-        <h2>Personal Details:</h2>
-        <div class="InfoListItem">
-            <p>First Name:</p>
-            <span class="view-mode" th:text="${user.firstName}">First</span>
-            <input class="edit-mode" type="text" th:value="${user.firstName}" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>Last Name:</p>
-            <span class="view-mode" th:text="${user.lastName}">Last</span>
-            <input class="edit-mode" type="text" th:value="${user.lastName}" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>Date of Birth:</p>
-            <span class="view-mode" th:text="${#temporals.format(user.dateOfBirth, 'MM/dd/yyyy')}">01/01/1990</span>
-            <input class="edit-mode" type="date" th:value="${user.dateOfBirth}" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>Personal ID (SSN or ARN):</p>
-            <span class="view-mode ssn-container">
-               <span id="maskedId"
-                     class="masked-id"
-                     ondblclick="toggleId()"
-                     th:attr="data-full-id=${user.pin}, data-last4=${#strings.substring(user.pin, user.pin.length() - 4)}">
+        <!-- Personal Info -->
+        <div class="InfoListCategory">
+            <h2>Personal Details:</h2>
+            <div class="InfoListItem">
+                <p>First Name:</p>
+                <span class="view-mode" th:text="${user.firstName}">First</span>
+                <input class="edit-mode" type="text" name="firstName" th:value="${user.firstName}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>Last Name:</p>
+                <span class="view-mode" th:text="${user.lastName}">Last</span>
+                <input class="edit-mode" type="text" name="lastName" th:value="${user.lastName}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>Date of Birth:</p>
+                <span class="view-mode" th:text="${#temporals.format(user.dateOfBirth, 'MM/dd/yyyy')}">01/01/1990</span>
+                <input class="edit-mode" type="date" name="dateOfBirth" th:value="${user.dateOfBirth}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>Personal ID (SSN or ARN):</p>
+                <span class="view-mode ssn-container">
+                <span id="maskedId"
+                      class="masked-id"
+                      ondblclick="toggleId()"
+                      th:attr="data-full-id=${user.pin}, data-last4=${#strings.substring(user.pin, user.pin.length() - 4)}">
                   ***-**-<span th:text="${#strings.substring(user.pin, user.pin.length() - 4)}">1234</span>
-               </span>
-               <small style="font-size: 11px; color: gray;">(Double-click to show/hide)</small>
+                </span>
+                <small style="font-size: 11px; color: gray;">(Double-click to show/hide)</small>
             </span>
+                <input class="edit-mode" type="password" id="editPin" name="pin"
+                       th:value="${user.pin}" style="display:none;"
+                       required pattern="\d{9}" minlength="9" maxlength="9"
+                       title="PIN must be exactly 9 digits. Double-click to show or hide value.">
+            </div>
+        </div>
 
-            <!-- Edit mode PIN field - masked by default, revealed on double-click -->
-            <input class="edit-mode"
-                   type="password"
-                   id="editPin"
-                   th:value="${user.pin}"
-                   name="pin"
-                   style="display:none;"
-                   required
-                   pattern="\d{9}"
-                   minlength="9"
-                   maxlength="9"
-                   title="PIN must be exactly 9 digits. Double-click to show or hide value.">
+        <!-- Address Fields -->
+        <div class="InfoListCategory">
+            <h2>Address:</h2>
+            <div class="InfoListItem">
+                <p>Street Address:</p>
+                <span class="view-mode" th:text="${address != null ? address.street : ''}">123 Main St</span>
+                <input class="edit-mode" type="text" name="street" th:value="${address != null ? address.street : ''}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>City:</p>
+                <span class="view-mode" th:text="${address != null ? address.city : ''}">St. Louis</span>
+                <input class="edit-mode" type="text" name="city" th:value="${address != null ? address.city : ''}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>ZIP:</p>
+                <span class="view-mode" th:text="${address != null ? address.zip : ''}">63101</span>
+                <input class="edit-mode" type="text" name="zip" th:value="${address != null ? address.zip : ''}" style="display:none;">
+            </div>
+            <div class="InfoListItem">
+                <p>State:</p>
+                <span class="view-mode" th:text="${address != null ? address.state : ''}">MO</span>
+                <input class="edit-mode" type="text" name="state" th:value="${address != null ? address.state : ''}" style="display:none;">
+            </div>
+        </div>
+
+        <!-- Edit Buttons -->
+        <div class="EditButton">
+            <button type="button" id="editBtn">Edit Details</button>
+            <button type="submit" id="saveBtn" style="display:none;">Save All</button>
+            <button type="button" id="cancelBtn" style="display:none;">Cancel</button>
         </div>
     </div>
-
-    <!-- Edit Buttons -->
-    <div class="EditButton">
-        <button id="editBtn">Edit Details</button>
-        <button id="saveBtn" style="display:none;">Save</button>
-        <button id="cancelBtn" style="display:none;">Cancel</button>
-    </div>
+</form>
 </div>
-
 <div class="AppStatus">
     <h2>Application Status:</h2>
     <h2>Incomplete</h2>
 </div>
+
 <script>
     const editBtn = document.getElementById("editBtn");
     const saveBtn = document.getElementById("saveBtn");
@@ -218,24 +149,9 @@
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
 
-        // Reset masked ID
         const maskedId = document.getElementById("maskedId");
         const last4 = maskedId.getAttribute("data-last4");
         maskedId.textContent = "***-**-" + last4;
-    });
-
-    saveBtn.addEventListener("click", () => {
-        viewModeElements.forEach((el, idx) => {
-            if (el.id === "maskedId" || el.classList.contains("ssn-container")) {
-                return;
-            }
-
-            const input = editModeElements[idx];
-            if (input) {
-                el.textContent = input.value;
-            }
-        });
-        cancelBtn.click();
     });
 
     function toggleId() {
@@ -250,7 +166,6 @@
         }
     }
 
-    // Double-click to toggle password visibility in edit mode
     document.addEventListener("DOMContentLoaded", function () {
         const pinInput = document.getElementById("editPin");
         if (pinInput) {

@@ -3,10 +3,18 @@
 
 package com.medicaidProject.medicaidProject.modles;
 import java.time.LocalDate;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
+@Entity
 public class User {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String firstName;
     private String lastName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -17,6 +25,7 @@ public class User {
     private String pin;
     private String employerTaxId;
     private String password;
+    @Transient
     private String verifyPassword;
 
     public User(String lastName, String firstName, LocalDate dateOfBirth, String phone, String username, String email, String password, String pin){
@@ -34,7 +43,7 @@ public class User {
 
     public User(){}
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
