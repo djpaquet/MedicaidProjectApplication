@@ -5,8 +5,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:replace="~{fragments :: head}">
     <title>Medicaid Employer Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+<nav>
+    <a th:href="@{/}" class="active">Home</a>
+    <a th:href="@{/user/login}">Applicant</a>
+    <a th:href="@{/employer/index}">Employer</a>
+    <a href="#adminLogin">Medicaid Employee</a>
+</nav>
 <h1>Missouri Medicaid Employer Portal</h1>
 <section class="main">
     <div class="container">
@@ -56,5 +63,19 @@
         </div>
     </div>
 </section>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const togglableFields = ['pin', 'password', 'verifyPassword'];
+
+    togglableFields.forEach(id => {
+      const input = document.getElementById(id);
+      if (input) {
+        input.addEventListener('dblclick', function () {
+          input.type = input.type === 'password' ? 'text' : 'password';
+        });
+      }
+    });
+  });
+</script>
 </body>
 </html>

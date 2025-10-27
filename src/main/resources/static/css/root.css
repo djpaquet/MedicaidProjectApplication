@@ -1,0 +1,165 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f6f9;
+  color: #333;
+}
+
+/* ===== Sticky Navbar ===== */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #0056a6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.8rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: bold;
+  transition: color 0.3s, background 0.3s;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+}
+nav a:hover, nav a.active {
+  background: white;
+  color: #0056a6;
+}
+
+/* ===== Page Container ===== */
+.page {
+  display: none;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 900px;
+  margin: 2rem auto;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+/* ===== Default Page (Landing) ===== */
+body:not(:has(:target)) #landing {
+  display: block;
+}
+
+/* ===== Target Pages ===== */
+#landing:target,
+#patientLogin:target,
+#doctorLogin:target,
+#adminLogin:target {
+  display: block;
+}
+
+/* ===== Typography ===== */
+h1, h2, h3 {
+  text-align: center;
+  color: #0056a6;
+}
+p {
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ===== Portal Cards ===== */
+.portal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f9fbff;
+  border: 2px solid #e0e8f5;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  max-width: 500px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+.portal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+.portal-card i {
+  font-size: 2rem;
+  color: #0056a6;
+  margin-bottom: 0.8rem;
+}
+.portal-card h3 {
+  margin: 0.2rem 0;
+  color: #0056a6;
+}
+.portal-card p {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0.5rem 0 0;
+}
+
+/* ===== Inputs & Buttons ===== */
+input, textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.3rem 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: #0056a6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #004080;
+}
+
+/* ===== Appointment Cards ===== */
+.app-card {
+  background: #eef5ff;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+/* ===== Calendar Layout ===== */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 1rem;
+}
+.day {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 5px;
+  min-height: 100px;
+  background: #f8f9ff;
+}
+.day h4 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ===== Weekly Calendar Table ===== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  margin-top: 10px;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 4px;
+  text-align: center;
+}
+th { background: #f0f0f0; }
