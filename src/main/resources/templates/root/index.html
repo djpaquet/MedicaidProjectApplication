@@ -3,16 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Missouri Medicaid Employment Verification</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Missouri Medicaid Employment Verification Portal</title>
+    <link rel="stylesheet" th:href="@{/css/root.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 <body>
-<h2>New Dashboard</h2>
+<nav>
+    <a th:href="@{/}" class="active">Home</a>
+    <a th:href="@{/user/login}">Applicant</a>
+    <a th:href="@{/employer/index}">Employer</a>
+    <a href="#adminLogin">Medicaid Employee</a>
+</nav>
 
-<button th:onclick="'window.location.href=\'' + @{/user/login} + '\''">
-    Applicants Dashboard
-</button>
-<button th:onclick="'window.location.href=\'' + @{/employer/index} + '\''">Employer Dashboard</button>
+<!-- ===== Landing Page ===== -->
+<div id="landing" class="page">
+    <h1>Welcome to the Missouri Medicaid Verification Portal</h1>
+    <p>This secure portal provides quick access for applicants, employers, and Medicaid employees to manage and verify Medicaid applications and eligibility information.</p>
+
+    <div class="portal-card" th:onclick="'window.location.href=\'' + @{/user/login} + '\''">
+        <i class="fa-solid fa-user"></i>
+        <h3>Applicant Portal</h3>
+        <p>Apply for Missouri Medicaid benefits, check your application status, and update your information securely online.</p>
+    </div>
+
+    <div class="portal-card" th:onclick="'window.location.href=\'' + @{/employer/index} + '\''">
+        <i class="fa-solid fa-building"></i>
+        <h3>Employer Portal</h3>
+        <p>Employers can verify applicant employment details and submit verification information to assist with Medicaid eligibility determinations.</p>
+    </div>
+
+    <div class="portal-card" >
+        <i class="fa-solid fa-hospital-user"></i>
+        <h3>Medicaid Employee Portal</h3>
+        <p>Authorized Medicaid staff can review, verify, and approve applicant information to ensure timely and accurate processing.</p>
+    </div>
+</div>
 </body>
 </html>
