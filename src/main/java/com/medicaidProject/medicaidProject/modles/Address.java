@@ -31,9 +31,9 @@ public class Address {
     @JoinColumn(name = "user_id")
     private User user;
 
-   /* @ManyToOne
+   @ManyToOne
     @JoinColumn(name = "employer_id")
-    private Employer employer; */
+    private Employer employer;
 
     // Getters & Setters
 
@@ -62,13 +62,13 @@ public class Address {
     public User getUser() { return user; }
     public void setUser(User user) {
         this.user = user;
-        //this.employer = null; // ensure only one is set
+        this.employer = null; // ensure only one is set
     }
 
-    /*public Employer getEmployer() { return employer; }
+    public Employer getEmployer() { return employer; }
     public void setEmployer(Employer employer) {
         this.employer = employer;
         this.user = null; // ensure only one is set
-    }*/
+    }
 }
 

@@ -5,13 +5,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:replace="~{fragments :: head}">
     <title>Medicaid Employer Portal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <nav>
     <a th:href="@{/}" class="active">Home</a>
     <a th:href="@{/user/login}">Applicant</a>
-    <a th:href="@{/employer/index}">Employer</a>
+    <a th:href="@{/employer/login}">Employer</a>
     <a href="#adminLogin">Medicaid Employee</a>
 </nav>
 <h1>Missouri Medicaid Employer Portal</h1>
@@ -38,25 +37,27 @@
                     Sign-In Below
                 </h2>
                 <form th:action="@{/employer/login}" th:object="${employer}" method="post">
+                    <p th:if="${error}" style="color:red;" th:text="${error}"></p>
                     <label class="form" th:for="username">
-                        Username:
+                        Email:
                     </label>
                     <input type="text" th:field="*{email}" placeholder="Enter Email" required />
                     <label class="form" th:for="password">
                         Password:
                     </label>
                     <input type="password" th:field="*{password}" placeholder="Enter Password" required />
-                    <button type="submit">
+                    <button type="submit" class="btn-primary">
                         Sign in
                     </button>
-                    <a href="#!">
-                        Forgot password?
-                    </a>
+
+                    <a href="#!">Forgot password?</a>
+
                     <div class="register">
-                        <p> Don't have an account? </p>
-                        <button type="button" onclick="window.location.href='/employer/sign-up'">
-                            Employers Register Here
-                        </button>
+                        <p>Don't have an account?</p>
+                        <!-- Link styled as button -->
+                        <a th:href="@{/employer/sign-up}">
+                            <button type="button" class="btn-secondary"> Employers Register Here </button>
+                        </a>
                     </div>
                 </form>
             </div>
