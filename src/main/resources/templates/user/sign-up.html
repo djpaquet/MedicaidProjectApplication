@@ -8,6 +8,12 @@
     <title>Medicaid Employment Verification App</title>
 </head>
 <body>
+<nav>
+    <a th:href="@{/}" class="active">Home</a>
+    <a th:href="@{/user/login}">Applicant</a>
+    <a th:href="@{/employer/login}">Employer</a>
+    <a href="#adminLogin">Medicaid Employee</a>
+</nav>
 <div class="form-container">
     <h2>Create Your Account</h2>
     <form action="/user/sign-up" method="post">

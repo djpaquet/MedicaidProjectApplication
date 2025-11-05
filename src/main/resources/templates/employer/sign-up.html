@@ -1,55 +1,80 @@
 <!-- Developed by Bhatti Rajwinder -->
-<!-- Updated by Dana Paquet -->
+<!-- Updated by Dana Paquet and improved with labeled sections -->
 
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: head}">
     <meta charset="UTF-8">
-    <title>Employer Sign up</title>
-
+    <title>Employer Sign Up</title>
 </head>
 <body>
-<!-- SIGNUP FORM -->
+<nav>
+    <a th:href="@{/}" class="active">Home</a>
+    <a th:href="@{/user/login}">Applicant</a>
+    <a th:href="@{/employer/login}">Employer</a>
+    <a href="#adminLogin">Medicaid Employee</a>
+</nav>
 <div class="form-container" id="signupSection">
     <h2>Create Your Account – Employer Use Only</h2>
-    <form action="/employer/sign-up" method="post" >
 
-        <label for="employerName">Company Name*</label>
-        <input type="text" id="employerName" name="employerName" placeholder="Enter your first name" >
+    <form th:action="@{/employer/sign-up}" th:object="${employer}" method="post">
 
+        <!-- ========== Company Information ========== -->
+        <fieldset>
+            <legend>Company Information</legend>
 
-        <label for="firstName">First Name*</label>
-        <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" >
+            <label for="employerName">Company Name<span class="req">*</span></label>
+            <input type="text" id="employerName" th:field="*{employerName}" placeholder="Enter company name" required>
 
-        <label for="lastName">Last Name*</label>
-        <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" >
+            <label for="employerTaxId">Employer Tax ID<span class="req">*</span></label>
+            <input type="text" id="employerTaxId" th:field="*{employerTaxId}" placeholder="Enter employer tax ID" required>
+        </fieldset>
 
-        <label for="phone">Phone Number*</label>
-        <input type="tel" id="phone" name="phone" placeholder="1234567890" pattern="[0-9]{10}" required>
+        <!-- ========== Contact Information ========== -->
+        <fieldset>
+            <legend>Contact Information (Person to Contact at Employer)</legend>
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
+            <label for="firstName">First Name<span class="req">*</span></label>
+            <input type="text" id="firstName" th:field="*{firstName}" placeholder="Contact first name" required>
 
-        <label for="address">Street Address*</label>
-        <input type="text" id="address" name="address" required>
+            <label for="lastName">Last Name<span class="req">*</span></label>
+            <input type="text" id="lastName" th:field="*{lastName}" placeholder="Contact last name" required>
 
-        <label for="city">City</label>
-        <input type="text" id="city" name="city" required>
+            <label for="phone">Phone Number<span class="req">*</span></label>
+            <input type="tel" id="phone" th:field="*{phone}" placeholder="Contact number 5551235555" pattern="[0-9]{10}" required>
 
-        <label for="zip">ZIP</label>
-        <input type="text" id="zip" name="zip" required>
+            <label for="email">Email<span class="req">*</span></label>
+            <input type="email" id="email" th:field="*{email}" placeholder="example@company.com" required>
+            <p th:if="${emailError}" style="color:red;" th:text="${emailError}"></p>
+        </fieldset>
 
-        <label for="state">State</label>
-        <input type="text" id="state" name="state" required>
+        <!-- ========== Address Information ========== -->
+        <fieldset>
+            <legend>Company Address</legend>
 
-        <label for="employerTaxId">Employer Tax ID</label>
-        <input type="text" id="employerTaxId" name="employerTaxId" required>
+            <label for="street">Street Address<span class="req">*</span></label>
+            <input type="text" id="street" name="address" placeholder="123 Main St" required>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required minlength="8" title="Double-click to show or hide value">
+            <label for="city">City<span class="req">*</span></label>
+            <input type="text" id="city" name="city" required>
 
-        <label for="verifyPassword">Confirm Password</label>
-        <input type="password" id="verifyPassword" name="verifyPassword" required minlength="8" title="Double-click to show or hide value">
+            <label for="state">State<span class="req">*</span></label>
+            <input type="text" id="state" name="state" required>
+
+            <label for="zip">ZIP<span class="req">*</span></label>
+            <input type="text" id="zip" name="zip" required>
+        </fieldset>
+
+        <!-- ========== Account Security ========== -->
+        <fieldset>
+            <legend>Account Security</legend>
+
+            <label for="password">Password<span class="req">*</span></label>
+            <input type="password" id="password" th:field="*{password}" minlength="8" title="Double-click to show or hide value" required>
+
+            <label for="verifyPassword">Confirm Password<span class="req">*</span></label>
+            <input type="password" id="verifyPassword" th:field="*{verifyPassword}" minlength="8" title="Double-click to show or hide value" required>
+        </fieldset>
 
         <div class="actions">
             <button type="submit" class="btn-primary">Sign Up</button>
@@ -57,10 +82,10 @@
         </div>
     </form>
 </div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const togglableFields = ['pin', 'password', 'verifyPassword'];
-
+    const togglableFields = ['password', 'verifyPassword'];
     togglableFields.forEach(id => {
       const input = document.getElementById(id);
       if (input) {
@@ -71,5 +96,6 @@
     });
   });
 </script>
+
 </body>
 </html>

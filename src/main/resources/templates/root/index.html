@@ -12,7 +12,7 @@
 <nav>
     <a th:href="@{/}" class="active">Home</a>
     <a th:href="@{/user/login}">Applicant</a>
-    <a th:href="@{/employer/index}">Employer</a>
+    <a th:href="@{/employer/login}">Employer</a>
     <a href="#adminLogin">Medicaid Employee</a>
 </nav>
 
@@ -27,7 +27,7 @@
         <p>Apply for Missouri Medicaid benefits, check your application status, and update your information securely online.</p>
     </div>
 
-    <div class="portal-card" th:onclick="'window.location.href=\'' + @{/employer/index} + '\''">
+    <div class="portal-card" th:onclick="'window.location.href=\'' + @{/employer/login} + '\''">
         <i class="fa-solid fa-building"></i>
         <h3>Employer Portal</h3>
         <p>Employers can verify applicant employment details and submit verification information to assist with Medicaid eligibility determinations.</p>
