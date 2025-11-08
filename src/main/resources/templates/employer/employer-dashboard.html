@@ -4,124 +4,191 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:replace="~{fragments :: head}">
     <title>Employer Sign up</title>
+</head>
 <body>
 <!-- Navbar -->
 <nav>
     <a class="navbar-brand" th:href="@{/employer/employer-dashboard}">Dashboard</a>
     <a class="nav-link" th:href="@{/employer/logout}">Log Out</a>
 </nav>
+
 <header>
     <h1>Employer Dashboard: <span th:text="${employer.employerName}">Employer</span></h1>
 </header>
+
 <div class="form-container">
-<form th:action="@{/employer/employer-dashboard/save}" method="post">
-    <div class="InfoList">
-    <div class="InfoListCategory">
-        <h2>Contact Information:</h2>
-        <div class="InfoListItem">
-            <p>First Name:
-                <span class="view-mode" th:text="${employer.firstName}">First</span>
-            </p>
-            <input class="edit-mode" type="text" name="firstName" th:value="${employer.firstName}" style="display:none;">
+    <form id="employerForm" th:action="@{/employer/employer-dashboard/save}" method="post" novalidate>
+        <div class="InfoList">
+
+            <!-- Contact Information -->
+            <div class="InfoListCategory">
+                <h2>Contact Information:</h2>
+                <div class="InfoListItem">
+                    <p>First Name:
+                        <span class="view-mode" th:text="${employer.firstName}">First</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="firstName" th:value="${employer.firstName}" style="display:none;" required>
+                    <div class="error-message">First Name is required.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>Last Name:
+                        <span class="view-mode" th:text="${employer.lastName}">Last</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="lastName" th:value="${employer.lastName}" style="display:none;" required>
+                    <div class="error-message">Last Name is required.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>Email:
+                        <span class="view-mode" th:text="${employer.email}">email@example.com</span>
+                    </p>
+                    <input class="edit-mode" type="email" name="email" th:value="${employer.email}" style="display:none;" required>
+                    <div class="error-message">Please enter a valid email.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>Phone:
+                        <span class="view-mode" th:text="${employer.phone}">(000) 000-0000</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="phone" th:value="${employer.phone}" style="display:none;" required pattern="^\d{10}$" placeholder="1234567890">
+                    <div class="error-message">Phone must be 10 digits.</div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="InfoListCategory">
+                <h2>Address:</h2>
+                <div class="InfoListItem">
+                    <p>Street Address:
+                        <span class="view-mode" th:text="${address.street}">address</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="street" th:value="${address.street}" style="display:none;" required>
+                    <div class="error-message">Street Address is required.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>City:
+                        <span class="view-mode" th:text="${address.city}">city</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="city" th:value="${address.city}" style="display:none;" required>
+                    <div class="error-message">City is required.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>ZIP:
+                        <span class="view-mode" th:text="${address.zip}">12345</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="zip" th:value="${address.zip}" style="display:none;" required pattern="^\d{5}$" placeholder="12345">
+                    <div class="error-message">ZIP must be 5 digits.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>State:
+                        <span class="view-mode" th:text="${address.state}">state</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="state" th:value="${address.state}" style="display:none;" required>
+                    <div class="error-message">State is required.</div>
+                </div>
+            </div>
+
+            <!-- Employer Details -->
+            <div class="InfoListCategory">
+                <h2>Employer Details:</h2>
+                <div class="InfoListItem">
+                    <p>Company Name:
+                        <span class="view-mode" th:text="${employer.employerName}">Company</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="employerName" th:value="${employer.employerName}" style="display:none;" required>
+                    <div class="error-message">Company Name is required.</div>
+                </div>
+
+                <div class="InfoListItem">
+                    <p>Employer Tax ID:
+                        <span class="view-mode" th:text="${employer.employerTaxId}">Tax ID</span>
+                    </p>
+                    <input class="edit-mode" type="text" name="employerTaxId" th:value="${employer.employerTaxId}" style="display:none;" required>
+                    <div class="error-message">Employer Tax ID is required.</div>
+                </div>
+            </div>
+
+            <!-- Edit Buttons -->
+            <div class="EditButton">
+                <button type="button" id="editBtn">Edit Details</button>
+                <button type="submit" id="saveBtn" style="display:none;">Save All</button>
+                <button type="button" id="cancelBtn" style="display:none;">Cancel</button>
+            </div>
         </div>
-        <div class="InfoListItem">
-            <p>Last Name:
-                <span class="view-mode" th:text="${employer.lastName}">Last</span>
-            </p>
-            <input class="edit-mode" type="text" name="lastName" th:value="${employer.lastName}" style="display:none;">
-        </div>
-        <div class="InfoListItem">
-            <p>Email:
-                <span class="view-mode" th:text="${employer.email}">email@example.com</span>
-            </p>
-            <input class="edit-mode" type="email" name="email" th:value="${employer.email}" style="display:none;" />
-        </div>
-        <p>Phone:
-            <span class="view-mode" th:text="${employer.phone}">(000) 000-0000</span>
-        </p>
-        <input class="edit-mode" type="text" name="phone" th:value="${employer.phone}" style="display:none;">
-    </div>
-    <div class="InfoListCategory">
-        <h2>Address:</h2>
-        <div class="InfoListItem">
-            <p>Street Address:
-                <span class="view-mode" th:text="${address.street}">address</span>
-            </p>
-            <input class="edit-mode" type="text" name="street" th:value="${address.street}" style="display:none;" />
-        </div>
-        <div class="InfoListItem">
-            <p>City:
-                <span class="view-mode" th:text="${address.city}">city</span>
-            </p>
-            <input class="edit-mode" type="text" name="city" th:value="${address.city}" style="display:none;" />
-        </div>
-        <div class="InfoListItem">
-            <p>ZIP:
-                <span class="view-mode" th:text="${address.zip}">address</span>
-            </p>
-            <input class="edit-mode" type="text" name="zip" th:value="${address.zip}" style="display:none;" />
-        </div>
-        <div class="InfoListItem">
-            <p>State:
-                <span class="view-mode" th:text="${address.state}">address</span>
-            </p>
-            <input class="edit-mode" type="text" name="state" th:value="${address.state}" style="display:none;" />
-        </div>
-    </div>
-    <div class="InfoListCategory">
-        <h2>Employer Details:</h2>
-        <p>Company Name:
-            <span class="view-mode" th:text="${employer.employerName}">address</span>
-        </p>
-        <input class="edit-mode" type="text" name="employerName" th:value="${employer.employerName}" style="display:none;" />
-        <p>Employer Tax ID:
-            <span class="view-mode" th:text="${employer.employerTaxId}">address</span>
-        </p>
-        <input class="edit-mode" type="text" name="employerTaxId" th:value="${employer.employerTaxId}" style="display:none;" />
-    </div>
-    <!-- Edit Buttons -->
-    <div class="EditButton">
-        <button type="button" id="editBtn">Edit Details</button>
-        <button type="submit" id="saveBtn" style="display:none;" class="btn-primary">Save</button>
-        <button type="button" id="cancelBtn" style="display:none;">Cancel</button>
-    </div>
-        </div>
-</form>
+    </form>
 </div>
+
 <script>
-         const editBtn = document.getElementById("editBtn");
-         const saveBtn = document.getElementById("saveBtn");
-         const cancelBtn = document.getElementById("cancelBtn");
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
 
-         const viewModeElements = document.querySelectorAll(".view-mode");
-         const editModeElements = document.querySelectorAll(".edit-mode");
+    const viewModeElements = document.querySelectorAll(".view-mode");
+    const editModeElements = document.querySelectorAll(".edit-mode");
 
-         editBtn.addEventListener("click", () => {
-             viewModeElements.forEach(el => el.style.display = "none");
-             editModeElements.forEach(el => el.style.display = "inline-block");
-             editBtn.style.display = "none";
-             saveBtn.style.display = "inline-block";
-             cancelBtn.style.display = "inline-block";
-         });
+    editBtn.addEventListener("click", () => {
+        viewModeElements.forEach(el => el.style.display = "none");
+        editModeElements.forEach(el => el.style.display = "inline-block");
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-block";
+        cancelBtn.style.display = "inline-block";
+    });
 
-         cancelBtn.addEventListener("click", () => {
-             viewModeElements.forEach(el => el.style.display = "inline-block");
-             editModeElements.forEach(el => el.style.display = "none");
-             editBtn.style.display = "inline-block";
-             saveBtn.style.display = "none";
-             cancelBtn.style.display = "none";
-         });
+    cancelBtn.addEventListener("click", () => {
+        viewModeElements.forEach(el => el.style.display = "inline-block");
+        editModeElements.forEach(el => el.style.display = "none");
+        editBtn.style.display = "inline-block";
+        saveBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+    });
 
-         saveBtn.addEventListener("click", () => {
-             viewModeElements.forEach((el, idx) => {
-                 const input = editModeElements[idx];
-                 if (input) {
-                     el.textContent = input.value;
-                 }
-             });
-             cancelBtn.click();
-         });
+    document.getElementById('employerForm').addEventListener('submit', function (e) {
+        let valid = true;
+        const inputs = this.querySelectorAll('.edit-mode');
+        inputs.forEach(input => {
+            const errorDiv = input.nextElementSibling;
+            input.classList.remove('error');
+            errorDiv.style.display = 'none';
 
-      </script>
+            if (!input.value.trim()) {
+                valid = false;
+                input.classList.add('error');
+                errorDiv.textContent = 'This field is required.';
+                errorDiv.style.display = 'block';
+            } else if (input.name === 'email') {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(input.value)) {
+                    valid = false;
+                    input.classList.add('error');
+                    errorDiv.textContent = 'Please enter a valid email.';
+                    errorDiv.style.display = 'block';
+                }
+            } else if (input.name === 'phone') {
+                const phonePattern = /^\d{10}$/;
+                if (!phonePattern.test(input.value)) {
+                    valid = false;
+                    input.classList.add('error');
+                    errorDiv.textContent = 'Phone must be 10 digits.';
+                    errorDiv.style.display = 'block';
+                }
+            } else if (input.name === 'zip') {
+                const zipPattern = /^\d{5}$/;
+                if (!zipPattern.test(input.value)) {
+                    valid = false;
+                    input.classList.add('error');
+                    errorDiv.textContent = 'ZIP must be 5 digits.';
+                    errorDiv.style.display = 'block';
+                }
+            }
+        });
+
+        if (!valid) e.preventDefault();
+    });
+</script>
+
 </body>
 </html>
