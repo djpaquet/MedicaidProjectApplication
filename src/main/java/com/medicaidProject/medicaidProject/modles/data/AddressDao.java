@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface AddressDao extends CrudRepository<Address, Long> {
     // optional: find addresses by user
-    Optional<Address> findByUser(User user);
+    Optional<Address> findByUserId(Long userId);
 
     Optional<Address> findByEmployer(Employer employer);
 }

@@ -61,17 +61,30 @@ public class UserController {
 
         // Check if username already exists
         if (userDao.findByUsername(user.getUsername()) != null) {
-            model.addAttribute("error", "Username is already taken");
-            model.addAttribute("email", user.getEmail());
+            model.addAttribute("userNameError", "Username is already taken");
+            model.addAttribute("user", user); // preserve form data
+            return "user/sign-up";
+        }
+
+        // Check if email already exists
+        if (userDao.findByEmail(user.getEmail()) != null) {
+            model.addAttribute("userEmailError", "Account with that email already exists");
+            model.addAttribute("user", user); // preserve form data
             return "user/sign-up";
         }
 
         // Check if passwords match
         if (!user.getPassword().equals(user.getVerifyPassword())) {
-            model.addAttribute("error", "Passwords do not match.");
+            model.addAttribute("passwordError", "Passwords do not match.");
+            model.addAttribute("user", user);
             return "user/sign-up";
         }
 
+        // Validation errors
+        if (errors.hasErrors()) {
+            model.addAttribute("user", user);
+            return "user/sign-up";
+        }
         // Hash password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.save(user);
@@ -85,17 +98,19 @@ public class UserController {
     // -------------------- DASHBOARD --------------------
     @GetMapping("user-dashboard")
     public String userDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
+        User sessionUser = (User) session.getAttribute("user");
 
-        if (user == null) {
+        if (sessionUser == null) {
             return "redirect:/user/login";
         }
 
+        // Re-fetch from DB to ensure entity is managed and up to date
+        User user = userDao.findById(sessionUser.getId()).orElse(sessionUser);
         model.addAttribute("user", user);
 
-        // Load address if it exists
-        Address address = addressDao.findByUser(user).orElse(null);
+        Address address = addressDao.findByUserId(user.getId()).orElse(null);
         model.addAttribute("address", address);
+
         return "user/user-dashboard";
     }
 
@@ -114,8 +129,11 @@ public class UserController {
             @RequestParam("state") String state,
             HttpSession session) {
 
-        User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/user/login";
+        User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser == null) return "redirect:/user/login";
+
+        // Re-fetch managed instance
+        User user = userDao.findById(sessionUser.getId()).orElseThrow();
 
         // Update user info
         user.setEmail(email);
@@ -127,7 +145,7 @@ public class UserController {
         userDao.save(user);
 
         // Update or create address
-        Address address = addressDao.findByUser(user).orElse(new Address());
+        Address address = addressDao.findByUserId(user.getId()).orElse(new Address());
         address.setStreet(street);
         address.setCity(city);
         address.setZip(zip);
@@ -135,6 +153,7 @@ public class UserController {
         address.setUser(user);
         addressDao.save(address);
 
+        session.setAttribute("user", user);
         return "redirect:/user/user-dashboard";
     }
 

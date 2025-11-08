@@ -175,6 +175,22 @@ input[type="file"] {
   overflow: hidden;
 }
 
+input.error {
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}
+
+.req {
+  color: red;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  display: none;
+  margin-top: 4px;
+}
+
 /* ======================================================
    FORM CONTAINER (added for sign-up page)
    ====================================================== */

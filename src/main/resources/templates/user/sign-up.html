@@ -7,6 +7,7 @@
 <head th:replace="~{fragments :: head}">
     <title>Medicaid Employment Verification App</title>
 </head>
+
 <body>
 <nav>
     <a th:href="@{/}" class="active">Home</a>
@@ -16,45 +17,40 @@
 </nav>
 <div class="form-container">
     <h2>Create Your Account</h2>
-    <form action="/user/sign-up" method="post">
+    <form id="signupForm" th:action="@{/user/sign-up}" th:object="${user}" method="post" novalidate>
 
         <label for="firstName">First Name<span class="req">*</span></label>
-        <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
+        <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
 
         <label for="lastName">Last Name<span class="req">*</span></label>
-        <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required>
+        <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
 
         <label for="dateOfBirth">Date of Birth<span class="req">*</span></label>
-        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+        <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
 
         <div class="pin-container">
             <label for="pin">SSN or ARN<span class="req">*</span></label>
-            <input
-                    type="password"
-                    id="pin"
-                    name="pin"
-                    placeholder="Enter your SSN or ARN"
-                    required
-                    pattern="\d{9}"
-                    title="Double-click to show or hide value"
-            />
+            <input type="password" id="pin" th:field="*{pin}" placeholder="Enter your SSN or ARN"
+                   required pattern="\d{9}" title="Double-click to show or hide value"/>
         </div>
 
-
         <label for="phone">Phone Number<span class="req">*</span></label>
-        <input type="tel" id="phone" name="phone" placeholder="e.g. 1235558900" required pattern="[0-9]{10}">
+        <input type="tel" id="phone" th:field="*{phone}" placeholder="e.g. 1235558900" required pattern="[0-9]{10}">
 
         <label for="email">Email<span class="req">*</span></label>
-        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
+        <p th:if="${userEmailError}" style="color:red;" th:text="${userEmailError}"></p>
 
         <label for="username">Username<span class="req">*</span></label>
-        <input type="text" id="username" name="username" placeholder="Choose a username" required minlength="4">
+        <input type="text" id="username" th:field="*{username}" placeholder="Choose a username" required minlength="4">
+        <p th:if="${userNameError}" style="color:red;" th:text="${userNameError}"></p>
 
         <label for="password">Password<span class="req">*</span></label>
         <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8"   title="Double-click to show or hide value">
 
         <label for="verifyPassword">Confirm Password<span class="req">*</span></label>
         <input type="password" id="verifyPassword" name="verifyPassword" placeholder="Re-enter password" required minlength="8"   title="Double-click to show or hide value">
+        <p th:if="${passwordError}" style="color:red;" th:text="${passwordError}"></p>
 
         <div class="info">
             By creating an account, you’ll be able to save progress, upload employment verification, and receive status updates.
@@ -67,18 +63,100 @@
     </form>
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const togglableFields = ['pin', 'password', 'verifyPassword'];
+    document.addEventListener("DOMContentLoaded", function () {
+  const togglableFields = ['pin', 'password', 'verifyPassword'];
+  togglableFields.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener('dblclick', function () {
+        input.type = input.type === 'password' ? 'text' : 'password';
+      });
+    }
+  });
 
-    togglableFields.forEach(id => {
-      const input = document.getElementById(id);
-      if (input) {
-        input.addEventListener('dblclick', function () {
-          input.type = input.type === 'password' ? 'text' : 'password';
-        });
+  const form = document.getElementById("signupForm");
+  const requiredInputs = form.querySelectorAll("input[required]");
+
+  function showError(input, message) {
+    input.classList.add("error");
+    let next = input.nextElementSibling;
+    if (!next || !next.classList.contains("error-message")) {
+      const msg = document.createElement("div");
+      msg.className = "error-message";
+      msg.textContent = message;
+      input.insertAdjacentElement("afterend", msg);
+    } else {
+      next.textContent = message;
+      next.style.display = "block";
+    }
+  }
+
+  function clearError(input) {
+    input.classList.remove("error");
+    const next = input.nextElementSibling;
+    if (next && next.classList.contains("error-message")) {
+      next.style.display = "none";
+    }
+  }
+
+  form.addEventListener("submit", function (e) {
+    let valid = true;
+
+    requiredInputs.forEach(input => {
+      clearError(input);
+      const value = input.value.trim();
+
+      if (!value) {
+        showError(input, "This field is required");
+        valid = false;
+        return;
+      }
+
+      switch (input.id) {
+        case "pin":
+          if (!/^\d{9}$/.test(value)) {
+            showError(input, "SSN or ARN must be exactly 9 digits");
+            valid = false;
+          }
+          break;
+        case "phone":
+          if (!/^\d{10}$/.test(value)) {
+            showError(input, "Phone number must be 10 digits");
+            valid = false;
+          }
+          break;
+        case "email":
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            showError(input, "Invalid email format");
+            valid = false;
+          }
+          break;
+        case "password":
+          if (value.length < 8) {
+            showError(input, "Password must be at least 8 characters");
+            valid = false;
+          }
+          break;
+        case "verifyPassword":
+          const passwordValue = document.getElementById("password").value.trim();
+          if (value !== passwordValue) {
+            showError(input, "Passwords do not match");
+            valid = false;
+          }
+          break;
       }
     });
+
+    if (!valid) e.preventDefault();
   });
+
+  form.addEventListener("input", e => {
+    if (e.target.matches("input[required]")) {
+      clearError(e.target);
+    }
+  });
+});
+
 </script>
 </body>
 </html>
