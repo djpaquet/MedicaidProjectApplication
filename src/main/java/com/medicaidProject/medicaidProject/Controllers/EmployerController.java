@@ -68,7 +68,7 @@ import jakarta.servlet.http.HttpSession;
 
            //Check if email account already exists
            if(employerDao.findByEmail(employer.getEmail()) != null){
-               model.addAttribute("emailError", "Email already exists");
+               model.addAttribute("emailError", "Account with that email already exists");
                model.addAttribute("email", employer.getEmail());
                return "employer/sign-up";
            }
