@@ -1,6 +1,7 @@
 <!-- Developed by Bhatti Rajwinder -->
 <!-- Updated by Dana Paquet -->
 <!-- v2 added masked pin field Updated by Dana Paquet -->
+<!-- v3 added form labels Updated by Darren Wunderlich -->
 
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
@@ -18,40 +19,54 @@
 <div class="form-container">
     <h2>Create Your Account</h2>
     <form id="signupForm" th:action="@{/user/sign-up}" th:object="${user}" method="post" novalidate>
+        
+        <!-- ========== Personal Information ========== -->
+        <fieldset>
+            <legend>Personal Information</legend>
+            
+            <label for="firstName">First Name<span class="req">*</span></label>
+            <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
 
-        <label for="firstName">First Name<span class="req">*</span></label>
-        <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
+            <label for="lastName">Last Name<span class="req">*</span></label>
+            <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
+            
+            <label for="dateOfBirth">Date of Birth<span class="req">*</span></label>
+            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
 
-        <label for="lastName">Last Name<span class="req">*</span></label>
-        <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
+            <div class="pin-container">
+                <label for="pin">SSN or ARN<span class="req">*</span></label>
+                <input type="password" id="pin" th:field="*{pin}" placeholder="Enter your SSN or ARN"
+                       required pattern="\d{9}" title="Double-click to show or hide value"/>
+            </div>
+        </fieldset>
+        
+        <!-- ========== Contact Information ========== -->
+        <fieldset>
+            <legend>Contact Information</legend>
+            
+            <label for="phone">Phone Number<span class="req">*</span></label>
+            <input type="tel" id="phone" th:field="*{phone}" placeholder="e.g. 1235558900" required pattern="[0-9]{10}">
 
-        <label for="dateOfBirth">Date of Birth<span class="req">*</span></label>
-        <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
+            <label for="email">Email<span class="req">*</span></label>
+            <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
+            <p th:if="${userEmailError}" style="color:red;" th:text="${userEmailError}"></p>
+        </fieldset>
+        
+        <!-- ========== Account Information ========== -->
+        <fieldset>
+            <legend>Account Information</legend>
+            
+            <label for="username">Username<span class="req">*</span></label>
+            <input type="text" id="username" th:field="*{username}" placeholder="Choose a username" required minlength="4">
+            <p th:if="${userNameError}" style="color:red;" th:text="${userNameError}"></p>
 
-        <div class="pin-container">
-            <label for="pin">SSN or ARN<span class="req">*</span></label>
-            <input type="password" id="pin" th:field="*{pin}" placeholder="Enter your SSN or ARN"
-                   required pattern="\d{9}" title="Double-click to show or hide value"/>
-        </div>
+            <label for="password">Password<span class="req">*</span></label>
+            <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8"   title="Double-click to show or hide value">
 
-        <label for="phone">Phone Number<span class="req">*</span></label>
-        <input type="tel" id="phone" th:field="*{phone}" placeholder="e.g. 1235558900" required pattern="[0-9]{10}">
-
-        <label for="email">Email<span class="req">*</span></label>
-        <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
-        <p th:if="${userEmailError}" style="color:red;" th:text="${userEmailError}"></p>
-
-        <label for="username">Username<span class="req">*</span></label>
-        <input type="text" id="username" th:field="*{username}" placeholder="Choose a username" required minlength="4">
-        <p th:if="${userNameError}" style="color:red;" th:text="${userNameError}"></p>
-
-        <label for="password">Password<span class="req">*</span></label>
-        <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8"   title="Double-click to show or hide value">
-
-        <label for="verifyPassword">Confirm Password<span class="req">*</span></label>
-        <input type="password" id="verifyPassword" name="verifyPassword" placeholder="Re-enter password" required minlength="8"   title="Double-click to show or hide value">
-        <p th:if="${passwordError}" style="color:red;" th:text="${passwordError}"></p>
-
+            <label for="verifyPassword">Confirm Password<span class="req">*</span></label>
+            <input type="password" id="verifyPassword" name="verifyPassword" placeholder="Re-enter password" required minlength="8"   title="Double-click to show or hide value">
+            <p th:if="${passwordError}" style="color:red;" th:text="${passwordError}"></p>
+        </fieldset>
         <div class="info">
             By creating an account, you’ll be able to save progress, upload employment verification, and receive status updates.
         </div>
