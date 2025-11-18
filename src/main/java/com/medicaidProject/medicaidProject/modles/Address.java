@@ -17,13 +17,13 @@ public class Address {
 
     public Address() {}
 
-    public Address(String street, String city, String state, String zip, User user /*Employer employer*/) {
+    public Address(String street, String city, String state, String zip, User user ,Employer employer) {
         this.street = street;
         this.city = city;
         this.state = state;
         this.zip = zip;
         this.user = user;
-        /*this.employer = employer;*/
+        this.employer = employer;
     }
 
     // Address belongs to either a User OR an Employer
