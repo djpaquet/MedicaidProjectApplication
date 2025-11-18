@@ -1,8 +1,8 @@
 <!-- Developed & Updated by Dana Paquet -->
-<!-- v2 added employer tax id field by Dana Paquet -->
+<!-- v3 Thymeleaf + validation + original formatting -->
 
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: head}">
 </head>
 <body>
@@ -18,111 +18,136 @@
     <h1 class="text-center">Missouri Medicaid Employment Verification</h1>
     <h2>To Be Completed By Medicaid Applicants</h2><br>
 </header>
+
 <!-- Form -->
 <div class="form-container">
-<form>
-    <fieldset>
-        <legend>Enter Employment Information</legend>
-        <div class="row mb-3">
-            <div class="col-12 col-md-6">
-                <input class="form-control" id="employerName" type="text" placeholder="Employer Name..." />
+    <form th:action="@{/user/user-employment-verification-form}" th:object="${userEmploymentInfo}" method="post" enctype="multipart/form-data">
+        <!-- Employment Info -->
+        <fieldset>
+            <legend>Enter Employment Information</legend>
+            <div class="row mb-3">
+                <div class="col-12 col-md-6">
+                    <input class="form-control" th:field="*{employerName}" type="text" placeholder="Employer Name..." th:disabled="${!editMode}" />
+                    <p class="text-danger" th:if="${#fields.hasErrors('employerName')}" th:errors="*{employerName}"></p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <input class="form-control" th:field="*{employerTaxId}" type="text" placeholder="Employer Tax Id..." th:disabled="${!editMode}" />
+                    <p class="text-danger" th:if="${#fields.hasErrors('employerTaxId')}" th:errors="*{employerTaxId}"></p>
+                </div>
             </div>
-            <div class="col-12 col-md-6">
-                <input class="form-control" id="employerTaId" type="text" placeholder="Employer Tax Id..." />
-            </div>
-        </div>
         </fieldset>
-    <fieldset>
-        <legend>Employer Address</legend>
-        <!-- Street -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <input type="text" id="street" name="street" class="form-control" placeholder="Street Address">
+
+        <!-- Address -->
+        <fieldset>
+            <legend>Employer Address</legend>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <input type="text" th:field="*{address}" class="form-control" placeholder="Street Address" th:disabled="${!editMode}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
+                </div>
             </div>
-        </div>
-        <!-- City + State -->
-        <div class="row mb-3">
-            <div class="col-12 col-md-6">
-                <input type="text" id="city" name="city" class="form-control" placeholder="City">
+            <div class="row mb-3">
+                <div class="col-12 col-md-6">
+                    <input type="text" th:field="*{city}" class="form-control" placeholder="City" th:disabled="${!editMode}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <input type="text" th:field="*{state}" class="form-control" placeholder="State" th:disabled="${!editMode}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></p>
+                </div>
             </div>
-            <div class="col-12 col-md-6">
-                <input type="text" id="state" name="state" class="form-control" placeholder="State">
+            <div class="row mb-3">
+                <div class="col-12 col-md-6">
+                    <input type="text" th:field="*{zip}" class="form-control" placeholder="ZIP" th:disabled="${!editMode}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('zip')}" th:errors="*{zip}"></p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <input type="text" th:field="*{country}" class="form-control" placeholder="Country" th:disabled="${!editMode}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></p>
+                </div>
             </div>
-        </div>
-        <!-- Zip + Country -->
-        <div class="row mb-3">
-            <div class="col-12 col-md-6">
-                <input type="text" id="zip" name="zip" class="form-control" placeholder="ZIP">
+        </fieldset>
+
+        <!-- Employment Information -->
+        <fieldset>
+            <legend>Employment Information</legend>
+            <div class="row mb-3">
+                <div class="col-12 col-md-4">
+                    <label for="hoursWorked" class="form-label mt-4">Hours worked monthly</label>
+                    <select class="form-select" th:field="*{hoursWorked}" id="hoursWorked" th:disabled="${!editMode}">
+                        <option value="">--Select--</option>
+                        <option value="Less than 10">Less than 10</option>
+                        <option value="11 to 20">11 to 20</option>
+                        <option value="21 to 30">21 to 30</option>
+                        <option value="31 to 40">31 to 40</option>
+                        <option value="More than 40">More than 40</option>
+                    </select>
+                    <p class="text-danger" th:if="${#fields.hasErrors('hoursWorked')}" th:errors="*{hoursWorked}"></p>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label for="employmentLength" class="form-label mt-4">Length of Employment</label>
+                    <select class="form-select" th:field="*{employmentLength}" id="employmentLength" th:disabled="${!editMode}">
+                        <option value="">--Select--</option>
+                        <option value="Less than 1 month">Less than 1 month</option>
+                        <option value="1 to 6 months">1 to 6 months</option>
+                        <option value="7 months to 1 Year">7 months to 1 Year</option>
+                        <option value="More than 1 Year">More than 1 Year</option>
+                    </select>
+                    <p class="text-danger" th:if="${#fields.hasErrors('employmentLength')}" th:errors="*{employmentLength}"></p>
+                </div>
             </div>
-            <div class="col-12 col-md-6">
-                <input type="text" id="country" name="country" class="form-control" placeholder="Country">
-            </div>
-        </div>
-    </fieldset>
-        <!-- Hours worked + length employment + currently employed-->
-        <!-- Hours worked + length employment + currently employed-->
-    <fieldset>
-        <legend>Employment Information</legend>
-        <div class="row mb-3">
-            <div class="col-12 col-md-4">
-                <label for="hoursWorked" class="form-label mt-4">Hours worked monthly</label>
-                <select class="form-select" id="hoursWorked">
-                    <option>Less than 10</option>
-                    <option>11 to 20</option>
-                    <option>21 to 30</option>
-                    <option>31 to 40</option>
-                    <option>More than 40</option>
-                </select>
-            </div>
-            <div class="col-12 col-md-4">
-                <label for="employmentLength" class="form-label mt-4">Length of Employment</label>
-                <select class="form-select" id="employmentLength">
-                    <option>Less than 1 month</option>
-                    <option>1 to 6 months</option>
-                    <option>7 months to 1 Year</option>
-                    <option>More than 1 Year</option>
-                </select>
-            </div>
-            <div class="col-12 col-md-4">
-                <label class="form-label mt-4">Currently Employed?</label>
+            <div class="row mb-3">
+                <div class="col-12 col-md-6">
+                    <label class="form-label mt-4">Tax Identification Number(TIN)</label>
+                    <input class="form-control" th:field="*{tin}" type="text" placeholder="TIN..." th:disabled="${!editMode}" />
+                    <p class="text-danger" th:if="${#fields.hasErrors('tin')}" th:errors="*{tin}"></p>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label mt-4">Currently Employed?</label>
                     <div class="form-check form-check-inline">
-                           <input class="form-check-input" type="radio" name="currentEmployer" id="yesEmployer" value="yes">
-                           <label class="form-check-label" for="yesEmployer">Yes</label>
+                        <input class="form-check-input" type="radio" th:field="*{isCurrentlyEmployed}" id="yesEmployer" value="true" th:disabled="${!editMode}">
+                        <label class="form-check-label" for="yesEmployer">Yes</label>
                     </div>
                     <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="currentEmployer" id="noEmployer" value="no">
-                            <label class="form-check-label" for="noEmployer">No</label>
+                        <input class="form-check-input" type="radio" th:field="*{isCurrentlyEmployed}" id="noEmployer" value="false" th:disabled="${!editMode}">
+                        <label class="form-check-label" for="noEmployer">No</label>
                     </div>
+                </div>
             </div>
-        </div>
-        <!-- Notes -->
-        <div>
-            <label for="exampleTextarea" class="form-label mt-4">Additional Notes</label>
-            <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
-        </div>
-        <!-- Upload -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <label for="formFile" class="form-label mt-4">Upload employment verification documents</label>
-                <input class="form-control" type="file" id="formFile">
+
+            <div>
+                <label for="exampleTextarea" class="form-label mt-4">Additional Notes</label>
+                <textarea class="form-control" th:field="*{notes}" id="exampleTextarea" rows="3" th:disabled="${!editMode}"></textarea>
             </div>
-        </div>
-    </fieldset>
-        <!-- Checkbox -->
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="formFile" class="form-label mt-4">Upload employment verification documents</label>
+                    <input class="form-control" type="file" id="formFile" name="file" th:disabled="${!editMode}">
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Certification Checkbox -->
         <fieldset>
             <div class="form-check mb-3">
-                <input class="" type="checkbox" value="" id="flexCheckDefault">
+                <input class="form-check-input" type="checkbox" th:field="*{certified}" id="flexCheckDefault" th:disabled="${!editMode}" />
                 <label class="form-check-label" for="flexCheckDefault">
                     I certify that the information provided is true, complete, and accurate to the best of my knowledge. I understand that providing false or misleading information may result in penalties or loss of benefits.
                 </label>
+                <p class="text-danger" th:if="${#fields.hasErrors('certified')}" th:errors="*{certified}"></p>
             </div>
         </fieldset>
-        <!-- Submit -->
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </fieldset>
-</form>
+
+        <!-- Save / Edit Buttons -->
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary" th:if="${editMode}">Save</button>
+            <a th:href="@{/user/user-employment-verification-form(edit='true')}" class="btn btn-secondary" th:if="${!editMode and !userEmploymentInfo.isVerified}">Edit</a>
+        </div>
+    </form>
 </div>
-<!-- Bootstrap JS (needed for navbar toggle) -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,9 +3,12 @@ package com.medicaidProject.medicaidProject.Controllers;
 
 import com.medicaidProject.medicaidProject.modles.Address;
 import com.medicaidProject.medicaidProject.modles.User;
+import com.medicaidProject.medicaidProject.modles.UserEmploymentInfo;
 import com.medicaidProject.medicaidProject.modles.data.AddressDao;
 import com.medicaidProject.medicaidProject.modles.data.UserDao;
+import com.medicaidProject.medicaidProject.modles.data.UserEmploymentInfoDao;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -26,6 +29,9 @@ public class UserController {
     private AddressDao addressDao;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserEmploymentInfoDao userEmploymentInfoDao;
 
     // -------------------- LOGIN --------------------
     @GetMapping("login")
@@ -158,16 +164,103 @@ public class UserController {
     }
 
     // -------------------- EMPLOYMENT VERIFICATION FORM --------------------
+// -------------------- EMPLOYMENT VERIFICATION FORM --------------------
     @GetMapping("user-employment-verification-form")
-    public String employmentVerification(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-
-        if (user == null) {
+    public String employmentVerification(
+            HttpSession session,
+            Model model,
+            @RequestParam(value = "edit", required = false) String edit
+    ) {
+        User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser == null) {
             return "redirect:/user/login";
         }
 
-        model.addAttribute("user", user);
+        User user = userDao.findById(sessionUser.getId()).orElseThrow();
+        UserEmploymentInfo info = userEmploymentInfoDao.findByUserId(user.getId());
+
+        boolean editMode;
+
+        if (info == null) {
+            // No info → editable by default
+            editMode = true;
+            info = new UserEmploymentInfo();
+        } else if (Boolean.TRUE.equals(info.getIsVerified())) {
+            // Verified → read-only, cannot edit
+            editMode = false;
+        } else {
+            // Not verified → read-only initially
+            editMode = false;
+            // Enable edit if user clicked "Edit"
+            if (edit != null) {
+                editMode = true;
+            }
+        }
+
+        model.addAttribute("userEmploymentInfo", info);
+        model.addAttribute("editMode", editMode);
+
         return "user/user-employment-verification-form";
+    }
+
+    @PostMapping("user-employment-verification-form")
+    public String saveEmploymentInfo(
+            @Valid @ModelAttribute("userEmploymentInfo") UserEmploymentInfo formInfo,
+            Errors errors,
+            HttpSession session,
+            Model model
+    ) {
+        User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser == null) {
+            return "redirect:/user/login";
+        }
+
+        User user = userDao.findById(sessionUser.getId())
+                .orElseThrow();
+
+        // Find existing employment info
+        UserEmploymentInfo existing = userEmploymentInfoDao.findByUserId(user.getId());
+
+        // VERIFIED → form is locked, redirect
+        if (existing != null && Boolean.TRUE.equals(existing.getIsVerified())) {
+            return "redirect:/user/user-employment-verification-form?locked";
+        }
+
+        // VALIDATION FAILED → return to form
+        if (errors.hasErrors()) {
+            model.addAttribute("editMode", true); // allow editing on validation errors
+            model.addAttribute("userEmploymentInfo", formInfo);
+            return "user/user-employment-verification-form";
+        }
+
+        // Create new record if needed
+        if (existing == null) {
+            existing = new UserEmploymentInfo();
+            existing.setUser(user);
+        }
+
+        // Copy safe fields
+        existing.setEmployerName(formInfo.getEmployerName());
+        existing.setEmployerTaxId(formInfo.getEmployerTaxId());
+        existing.setTin(formInfo.getTin());
+        existing.setAddress(formInfo.getAddress());
+        existing.setCity(formInfo.getCity());
+        existing.setState(formInfo.getState());
+        existing.setZip(formInfo.getZip());
+        existing.setCountry(formInfo.getCountry());
+        existing.setIsCurrentlyEmployed(formInfo.getIsCurrentlyEmployed());
+        existing.setHoursWorked(formInfo.getHoursWorked());
+        existing.setEmploymentLength(formInfo.getEmploymentLength());
+        existing.setNotes(formInfo.getNotes());
+        existing.setCertified(formInfo.getCertified() != null ? formInfo.getCertified() : false);
+
+        // Mark as unverified until reviewed
+        existing.setIsVerified(false);
+
+        // Save
+        userEmploymentInfoDao.save(existing);
+
+        return "redirect:/user/user-employment-verification-form?saved";
     }
 
     // -------------------- LOGOUT --------------------
