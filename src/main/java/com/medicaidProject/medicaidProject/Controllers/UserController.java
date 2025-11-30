@@ -2,9 +2,11 @@
 package com.medicaidProject.medicaidProject.Controllers;
 
 import com.medicaidProject.medicaidProject.modles.Address;
+import com.medicaidProject.medicaidProject.modles.States;
 import com.medicaidProject.medicaidProject.modles.User;
 import com.medicaidProject.medicaidProject.modles.UserEmploymentInfo;
 import com.medicaidProject.medicaidProject.modles.data.AddressDao;
+import com.medicaidProject.medicaidProject.modles.data.StatesDao;
 import com.medicaidProject.medicaidProject.modles.data.UserDao;
 import com.medicaidProject.medicaidProject.modles.data.UserEmploymentInfoDao;
 import jakarta.servlet.http.HttpSession;
@@ -13,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("user")
@@ -32,6 +36,13 @@ public class UserController {
 
     @Autowired
     private UserEmploymentInfoDao userEmploymentInfoDao;
+
+    @Autowired
+    private StatesDao statesDao;
+
+    public List<States> getStates() {
+        return statesDao.findAll();
+    }
 
     // -------------------- LOGIN --------------------
     @GetMapping("login")
@@ -79,6 +90,13 @@ public class UserController {
             return "user/sign-up";
         }
 
+        // Check if email already exists
+        if (userDao.findByPin(user.getPin()) != null) {
+            model.addAttribute("userPinError", "Duplicate PIN detected. Account with that PIN already exists");
+            model.addAttribute("user", user); // preserve form data
+            return "user/sign-up";
+        }
+
         // Check if passwords match
         if (!user.getPassword().equals(user.getVerifyPassword())) {
             model.addAttribute("passwordError", "Passwords do not match.");
@@ -114,6 +132,8 @@ public class UserController {
         User user = userDao.findById(sessionUser.getId()).orElse(sessionUser);
         model.addAttribute("user", user);
 
+        model.addAttribute("states", getStates());
+
         Address address = addressDao.findByUserId(user.getId()).orElse(null);
         model.addAttribute("address", address);
 
@@ -133,15 +153,38 @@ public class UserController {
             @RequestParam("city") String city,
             @RequestParam("zip") String zip,
             @RequestParam("state") String state,
+            Model model,
             HttpSession session) {
 
         User sessionUser = (User) session.getAttribute("user");
         if (sessionUser == null) return "redirect:/user/login";
 
+        // Validate state selection
+        if (state == null || state.isBlank()) {
+            model.addAttribute("stateError", "Please select a state.");
+            model.addAttribute("states", statesDao.findAll());
+
+            // Reload address so form keeps values
+            Address address = addressDao.findByUserId(sessionUser.getId()).orElse(new Address());
+            model.addAttribute("address", address);
+
+            return "user/user-dashboard";
+        }
         // Re-fetch managed instance
         User user = userDao.findById(sessionUser.getId()).orElseThrow();
 
-        // Update user info
+        // ----------------- PIN uniqueness check -----------------
+        User existingUserWithPin = userDao.findByPin(pin);
+        if (existingUserWithPin != null && !existingUserWithPin.getId().equals(user.getId())) {
+            model.addAttribute("pinError", "This PIN is already in use by another user.");
+            model.addAttribute("user", user);
+            model.addAttribute("states", statesDao.findAll());
+            Address address = addressDao.findByUserId(user.getId()).orElse(new Address());
+            model.addAttribute("address", address);
+            return "user/user-dashboard";  // show form with error
+        }
+
+        // ----------------- Update user info -----------------
         user.setEmail(email);
         user.setPhone(phone);
         user.setFirstName(firstName);
@@ -150,7 +193,7 @@ public class UserController {
         user.setPin(pin);
         userDao.save(user);
 
-        // Update or create address
+        // ----------------- Update or create address -----------------
         Address address = addressDao.findByUserId(user.getId()).orElse(new Address());
         address.setStreet(street);
         address.setCity(city);
@@ -159,12 +202,13 @@ public class UserController {
         address.setUser(user);
         addressDao.save(address);
 
+        // Update session user
         session.setAttribute("user", user);
+
         return "redirect:/user/user-dashboard";
     }
 
     // -------------------- EMPLOYMENT VERIFICATION FORM --------------------
-// -------------------- EMPLOYMENT VERIFICATION FORM --------------------
     @GetMapping("user-employment-verification-form")
     public String employmentVerification(
             HttpSession session,
@@ -197,6 +241,8 @@ public class UserController {
             }
         }
 
+
+        model.addAttribute("states", statesDao.findAll());
         model.addAttribute("userEmploymentInfo", info);
         model.addAttribute("editMode", editMode);
 
@@ -206,7 +252,7 @@ public class UserController {
     @PostMapping("user-employment-verification-form")
     public String saveEmploymentInfo(
             @Valid @ModelAttribute("userEmploymentInfo") UserEmploymentInfo formInfo,
-            Errors errors,
+            BindingResult errors,
             HttpSession session,
             Model model
     ) {
@@ -218,28 +264,25 @@ public class UserController {
         User user = userDao.findById(sessionUser.getId())
                 .orElseThrow();
 
-        // Find existing employment info
         UserEmploymentInfo existing = userEmploymentInfoDao.findByUserId(user.getId());
 
-        // VERIFIED → form is locked, redirect
         if (existing != null && Boolean.TRUE.equals(existing.getIsVerified())) {
             return "redirect:/user/user-employment-verification-form?locked";
         }
 
-        // VALIDATION FAILED → return to form
+        // Validation failed → return form
         if (errors.hasErrors()) {
-            model.addAttribute("editMode", true); // allow editing on validation errors
-            model.addAttribute("userEmploymentInfo", formInfo);
+            model.addAttribute("editMode", true); // allow editing
+            model.addAttribute("userEmploymentInfo", formInfo); // <-- must keep this line
+            model.addAttribute("states", statesDao.findAll());
             return "user/user-employment-verification-form";
         }
 
-        // Create new record if needed
         if (existing == null) {
             existing = new UserEmploymentInfo();
             existing.setUser(user);
         }
 
-        // Copy safe fields
         existing.setEmployerName(formInfo.getEmployerName());
         existing.setEmployerTaxId(formInfo.getEmployerTaxId());
         existing.setTin(formInfo.getTin());
@@ -253,11 +296,8 @@ public class UserController {
         existing.setEmploymentLength(formInfo.getEmploymentLength());
         existing.setNotes(formInfo.getNotes());
         existing.setCertified(formInfo.getCertified() != null ? formInfo.getCertified() : false);
-
-        // Mark as unverified until reviewed
         existing.setIsVerified(false);
 
-        // Save
         userEmploymentInfoDao.save(existing);
 
         return "redirect:/user/user-employment-verification-form?saved";

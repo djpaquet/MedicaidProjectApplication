@@ -4,6 +4,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 import java.io.Serializable;
 
@@ -15,6 +17,8 @@ public class Employer {
     private String employerName;
     private String firstName;
     private String lastName;
+    @NotBlank(message = "Employer Tax ID is required.")
+    @Pattern(regexp = "\\d{9}", message = "Tax ID must be 9 digits.")
     private String employerTaxId;
     private String email;
     private String password;

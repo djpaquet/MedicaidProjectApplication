@@ -38,15 +38,18 @@
                 </h2>
                 <form th:action="@{/employer/login}" th:object="${employer}" method="post">
                     <p th:if="${error}" style="color:red;" th:text="${error}"></p>
-                    <label class="form" th:for="username">
+                    <label class="form" th:for="email">
                         Email:
                     </label>
                     <input type="text" th:field="*{email}" placeholder="Enter Email" required />
+                    <div class="input-with-icon">
                     <label class="form" th:for="password">
                         Password:
                     </label>
                     <input type="password" th:field="*{password}" placeholder="Enter Password" required />
-                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-eye-slash" id="togglePassword"> </i>
+                    </div>
+                        <button type="submit" class="btn-primary">
                         Sign in
                     </button>
 
@@ -65,18 +68,24 @@
     </div>
 </section>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const togglableFields = ['pin', 'password', 'verifyPassword'];
+document.addEventListener("DOMContentLoaded", function () {
+    // Helper function to toggle visibility and icon
+    function setupToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        if (!toggle || !input) return;
 
-    togglableFields.forEach(id => {
-      const input = document.getElementById(id);
-      if (input) {
-        input.addEventListener('dblclick', function () {
-          input.type = input.type === 'password' ? 'text' : 'password';
+        toggle.addEventListener('click', function () {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            // Toggle the eye/eye-slash icon
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
         });
-      }
-    });
-  });
+    }
+setupToggle('togglePassword', 'password');
+});
 </script>
 </body>
 </html>

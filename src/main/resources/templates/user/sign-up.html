@@ -33,11 +33,13 @@
             <label for="dateOfBirth">Date of Birth<span class="req">*</span></label>
             <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
 
-            <div class="pin-container">
+            <div class="input-with-icon">
                 <label for="pin">SSN or ARN<span class="req">*</span></label>
                 <input type="password" id="pin" th:field="*{pin}" placeholder="Enter your SSN or ARN"
                        required pattern="\d{9}" title="Double-click to show or hide value"/>
+                <i class="bi bi-eye-slash" id="toggleVerifyPin"> </i>
             </div>
+            <p th:if="${userPinError}" style="color:red;" th:text="${userPinError}"></p>
         </fieldset>
         
         <!-- ========== Contact Information ========== -->
@@ -59,12 +61,16 @@
             <label for="username">Username<span class="req">*</span></label>
             <input type="text" id="username" th:field="*{username}" placeholder="Choose a username" required minlength="4">
             <p th:if="${userNameError}" style="color:red;" th:text="${userNameError}"></p>
-
+            <div class="input-with-icon">
             <label for="password">Password<span class="req">*</span></label>
             <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8"   title="Double-click to show or hide value">
-
+            <i class="bi bi-eye-slash" id="togglePassword"> </i>
+            </div>
+            <div class="input-with-icon">
             <label for="verifyPassword">Confirm Password<span class="req">*</span></label>
             <input type="password" id="verifyPassword" name="verifyPassword" placeholder="Re-enter password" required minlength="8"   title="Double-click to show or hide value">
+            <i class="bi bi-eye-slash" id="toggleVerifyPassword"> </i>
+            </div>
             <p th:if="${passwordError}" style="color:red;" th:text="${passwordError}"></p>
         </fieldset>
         <div class="info">
@@ -78,16 +84,28 @@
     </form>
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-  const togglableFields = ['pin', 'password', 'verifyPassword'];
-  togglableFields.forEach(id => {
-    const input = document.getElementById(id);
-    if (input) {
-      input.addEventListener('dblclick', function () {
-        input.type = input.type === 'password' ? 'text' : 'password';
-      });
+document.addEventListener("DOMContentLoaded", function () {
+    // Helper function to toggle visibility and icon
+    function setupToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        if (!toggle || !input) return;
+
+        toggle.addEventListener('click', function () {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            // Toggle the eye/eye-slash icon
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
     }
-  });
+
+    // Set up toggles for all fields
+    setupToggle('toggleVerifyPin', 'pin');
+    setupToggle('togglePassword', 'password');
+    setupToggle('toggleVerifyPassword', 'verifyPassword');
+
 
   const form = document.getElementById("signupForm");
   const requiredInputs = form.querySelectorAll("input[required]");

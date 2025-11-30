@@ -2,8 +2,10 @@ package com.medicaidProject.medicaidProject.Controllers;
 
 import com.medicaidProject.medicaidProject.modles.Address;
 import com.medicaidProject.medicaidProject.modles.Employer;
+import com.medicaidProject.medicaidProject.modles.States;
 import com.medicaidProject.medicaidProject.modles.data.AddressDao;
 import com.medicaidProject.medicaidProject.modles.data.EmployerDao;
+import com.medicaidProject.medicaidProject.modles.data.StatesDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -12,7 +14,9 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 
-    @Controller
+import java.util.List;
+
+@Controller
     @RequestMapping("employer")
 
     public class EmployerController {
@@ -26,6 +30,13 @@ import jakarta.servlet.http.HttpSession;
         @Autowired
         private PasswordEncoder passwordEncoder;
 
+        @Autowired
+        private StatesDao statesDao;
+
+        public List<States> getStates() {
+        return statesDao.findAll();
+    }
+
         // -------------------- LOGIN --------------------
         @GetMapping(value = "login")
         public String loginForm(Model model) {
@@ -38,7 +49,7 @@ import jakarta.servlet.http.HttpSession;
             Employer existingEmployer = employerDao.findByEmail(employer.getEmail());
 
             if(existingEmployer == null || !passwordEncoder.matches(employer.getPassword(), existingEmployer.getPassword())){
-                model.addAttribute("error", "Invalid username or password");
+                model.addAttribute("error", "Invalid email or password");
                 return "employer/index";
             }
 
@@ -52,6 +63,7 @@ import jakarta.servlet.http.HttpSession;
         public String signUpForm(Model model) {
             model.addAttribute("title", "Sign up to get started!");
             model.addAttribute("employer", new Employer());
+            model.addAttribute("states", getStates());
             return "employer/sign-up";
         }
 
@@ -70,11 +82,13 @@ import jakarta.servlet.http.HttpSession;
            if(employerDao.findByEmail(employer.getEmail()) != null){
                model.addAttribute("emailError", "Account with that email already exists");
                model.addAttribute("email", employer.getEmail());
+               model.addAttribute("states", getStates());
                return "employer/sign-up";
            }
 
            //Check if passwords match
             if(!employer.getPassword().equals(employer.getVerifyPassword())){
+                model.addAttribute("states", getStates());
                 model.addAttribute("error", "Passwords do not match.");
                 return "employer/sign-up";
             }
@@ -109,6 +123,7 @@ import jakarta.servlet.http.HttpSession;
             }
 
             model.addAttribute("employer", employer);
+            model.addAttribute("states", getStates());
 
             //load address if it exists
             Address address = addressDao.findByEmployer(employer).orElse(null);

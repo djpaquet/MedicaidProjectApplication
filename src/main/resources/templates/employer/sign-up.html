@@ -27,7 +27,14 @@
             <input type="text" id="employerName" th:field="*{employerName}" placeholder="Enter company name" required>
 
             <label for="employerTaxId">Employer Tax ID<span class="req">*</span></label>
-            <input type="text" id="employerTaxId" th:field="*{employerTaxId}" placeholder="Enter employer tax ID" required>
+            <input type="text"
+                   id="employerTaxId"
+                   th:field="*{employerTaxId}"
+                   placeholder="Enter employer tax ID"
+                   required
+                   pattern="\d{9}"
+                   maxlength="9"
+                   title="Employer Tax ID must be exactly 9 digits">
         </fieldset>
 
         <!-- ========== Contact Information ========== -->
@@ -59,7 +66,21 @@
             <input type="text" id="city" name="city" required>
 
             <label for="state">State<span class="req">*</span></label>
-            <input type="text" id="state" name="state" required>
+
+            <select id="state"
+                    name="state"
+                    required>
+                <option value="">-- Select State --</option>
+
+                <!-- Loop through states list -->
+                <option th:each="s : ${states}"
+                        th:value="${s.stateCode}"
+                        th:text="${s.stateName}">
+                </option>
+            </select>
+
+            <div class="error-message" style="display:none;">State is required.</div>
+
 
             <label for="zip">ZIP<span class="req">*</span></label>
             <input type="text" id="zip" name="zip" required>
@@ -68,12 +89,16 @@
         <!-- ========== Account Security ========== -->
         <fieldset>
             <legend>Account Security</legend>
-
+            <div class="input-with-icon">
             <label for="password">Password<span class="req">*</span></label>
             <input type="password" id="password" th:field="*{password}" minlength="8" title="Double-click to show or hide value" required>
-
+                <i class="bi bi-eye-slash" id="togglePassword"> </i>
+            </div>
+            <div class="input-with-icon">
             <label for="verifyPassword">Confirm Password<span class="req">*</span></label>
             <input type="password" id="verifyPassword" th:field="*{verifyPassword}" minlength="8" title="Double-click to show or hide value" required>
+                <i class="bi bi-eye-slash" id="toggleVerifyPassword"> </i>
+            </div>
         </fieldset>
 
         <div class="actions">
@@ -85,19 +110,29 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // Password visibility toggle
-  const togglableFields = ['password', 'verifyPassword'];
-  togglableFields.forEach(id => {
-    const input = document.getElementById(id);
-    if (input) {
-      input.addEventListener('dblclick', function () {
-        input.type = input.type === 'password' ? 'text' : 'password';
-      });
+    // Helper function to toggle visibility and icon
+    function setupToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        if (!toggle || !input) return;
+
+        toggle.addEventListener('click', function () {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            // Toggle the eye/eye-slash icon
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
     }
-  });
+
+    // Set up toggles for all fields
+    setupToggle('toggleVerifyPassword', 'verifyPassword');
+    setupToggle('togglePassword', 'password');
+
 
   const form = document.getElementById("employerSignupForm");
-  const requiredInputs = form.querySelectorAll("input[required]");
+  const requiredInputs = form.querySelectorAll("input[required], select[required]");
 
   function showError(input, message) {
     input.classList.add("error");
@@ -166,8 +201,20 @@ document.addEventListener("DOMContentLoaded", function () {
             valid = false;
           }
           break;
-      }
-    });
+        case "state":
+          if (!value) {
+            showError(input, "State is required");
+            valid = false;
+          }
+          break;
+        case "employerTaxId":
+          if (!/^\d{9}$/.test(value)) {
+            showError(input, "Employer Tax ID must be exactly 9 digits");
+            valid = false;
+          }
+          break;
+          }
+        });
 
     if (!valid) e.preventDefault();
   });
