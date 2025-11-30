@@ -1,6 +1,7 @@
 package com.medicaidProject.medicaidProject.modles;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "address")

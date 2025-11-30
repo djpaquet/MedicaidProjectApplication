@@ -87,7 +87,20 @@
                     <p>State:
                         <span class="view-mode" th:text="${address.state}">state</span>
                     </p>
-                    <input class="edit-mode" type="text" name="state" th:value="${address.state}" style="display:none;" required>
+
+                    <!-- Dropdown for edit mode -->
+                    <select class="edit-mode"
+                            name="state"
+                            style="display:none;"
+                            required>
+                        <option value="">-- Select State --</option>
+                        <option th:each="s : ${states}"
+                                th:value="${s.stateCode}"
+                                th:text="${s.stateName}"
+                                th:selected="${address.state} == ${s.stateCode}">
+                        </option>
+                    </select>
+
                     <div class="error-message">State is required.</div>
                 </div>
             </div>
@@ -107,9 +120,19 @@
                     <p>Employer Tax ID:
                         <span class="view-mode" th:text="${employer.employerTaxId}">Tax ID</span>
                     </p>
-                    <input class="edit-mode" type="text" name="employerTaxId" th:value="${employer.employerTaxId}" style="display:none;" required>
+                    <input class="edit-mode"
+                           type="text"
+                           name="employerTaxId"
+                           th:value="${employer.employerTaxId}"
+                           style="display:none;"
+                           required
+                           pattern="\d{9}"
+                           maxlength="9"
+                           placeholder="123456789"
+                           title="Employer Tax ID must be exactly 9 digits">
                     <div class="error-message">Employer Tax ID is required.</div>
                 </div>
+
             </div>
 
             <!-- Edit Buttons -->
@@ -146,48 +169,61 @@
         cancelBtn.style.display = "none";
     });
 
-    document.getElementById('employerForm').addEventListener('submit', function (e) {
-        let valid = true;
-        const inputs = this.querySelectorAll('.edit-mode');
-        inputs.forEach(input => {
-            const errorDiv = input.nextElementSibling;
-            input.classList.remove('error');
-            errorDiv.style.display = 'none';
+cancelBtn.addEventListener("click", function () {
+        window.location.href = "/employer/employer-dashboard";
+    });
 
-            if (!input.value.trim()) {
+document.getElementById('employerForm').addEventListener('submit', function (e) {
+    let valid = true;
+    const inputs = this.querySelectorAll('.edit-mode');
+    inputs.forEach(input => {
+        const errorDiv = input.nextElementSibling;
+        input.classList.remove('error');
+        errorDiv.style.display = 'none';
+
+        if (!input.value.trim()) {
+            valid = false;
+            input.classList.add('error');
+            errorDiv.textContent = 'This field is required.';
+            errorDiv.style.display = 'block';
+        } else if (input.name === 'email') {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(input.value)) {
                 valid = false;
                 input.classList.add('error');
-                errorDiv.textContent = 'This field is required.';
+                errorDiv.textContent = 'Please enter a valid email.';
                 errorDiv.style.display = 'block';
-            } else if (input.name === 'email') {
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailPattern.test(input.value)) {
-                    valid = false;
-                    input.classList.add('error');
-                    errorDiv.textContent = 'Please enter a valid email.';
-                    errorDiv.style.display = 'block';
-                }
-            } else if (input.name === 'phone') {
-                const phonePattern = /^\d{10}$/;
-                if (!phonePattern.test(input.value)) {
-                    valid = false;
-                    input.classList.add('error');
-                    errorDiv.textContent = 'Phone must be 10 digits.';
-                    errorDiv.style.display = 'block';
-                }
-            } else if (input.name === 'zip') {
-                const zipPattern = /^\d{5}$/;
-                if (!zipPattern.test(input.value)) {
-                    valid = false;
-                    input.classList.add('error');
-                    errorDiv.textContent = 'ZIP must be 5 digits.';
-                    errorDiv.style.display = 'block';
-                }
             }
-        });
-
-        if (!valid) e.preventDefault();
+        } else if (input.name === 'phone') {
+            const phonePattern = /^\d{10}$/;
+            if (!phonePattern.test(input.value)) {
+                valid = false;
+                input.classList.add('error');
+                errorDiv.textContent = 'Phone must be 10 digits.';
+                errorDiv.style.display = 'block';
+            }
+        } else if (input.name === 'zip') {
+            const zipPattern = /^\d{5}$/;
+            if (!zipPattern.test(input.value)) {
+                valid = false;
+                input.classList.add('error');
+                errorDiv.textContent = 'ZIP must be 5 digits.';
+                errorDiv.style.display = 'block';
+            }
+        } else if (input.name === 'employerTaxId') {
+            const taxIdPattern = /^\d{9}$/;
+            if (!taxIdPattern.test(input.value)) {
+                valid = false;
+                input.classList.add('error');
+                errorDiv.textContent = 'Employer Tax ID must be exactly 9 digits.';
+                errorDiv.style.display = 'block';
+            }
+        }
     });
+
+    if (!valid) e.preventDefault();
+});
+
 </script>
 
 </body>

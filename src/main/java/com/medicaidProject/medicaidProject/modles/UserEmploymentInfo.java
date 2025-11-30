@@ -51,7 +51,7 @@ public class UserEmploymentInfo {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isVerified = false;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @NotNull(message ="Must verify information is accurate to continue")
     private Boolean certified;
 
     @ManyToOne

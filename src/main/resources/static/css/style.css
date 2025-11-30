@@ -185,10 +185,20 @@ input.error {
 }
 
 .error-message {
+display: none;
   color: red;
   font-size: 0.9em;
-  display: none;
   margin-top: 4px;
+}
+
+/* Hide errors by default unless explicitly showing */
+.validation-error {
+    display: none;
+}
+
+/* When edit mode is active, errors are visible */
+.edit-mode-active .validation-error {
+    display: block;
 }
 
 /* ======================================================
@@ -208,6 +218,11 @@ input.error {
   color: #0056a6;
   margin-bottom: 1.5rem;
 }
+
+form i {
+            margin-left: -30px;
+            cursor: pointer;
+        }
 
 /* ======================================================
    FIELDSETS (combined & extended)
@@ -270,3 +285,68 @@ button, .btn-primary, .btn-secondary {
 .text-danger { font-size: 0.85rem; }
 
 .read-value { font-weight: 500; display: block; padding: 4px 0; }
+
+/* Pin Wrapper for alignment */
+.pin-wrapper {
+    display: flex;
+    align-items: center; /* Ensures the icon and input/field are centered */
+    position: relative; /* To position the icon inside the wrapper */
+}
+
+/* Pin container for both view and edit modes */
+.pin-container {
+    display: flex;
+    align-items: center; /* Vertically center the content */
+    gap: 8px; /* Space between masked ID and the eye icon */
+}
+
+/* View Mode (masked PIN) and Edit Mode (input) */
+.masked-id, .edit-mode {
+    min-width: 120px;
+    padding: 4px 8px;
+    text-align: left;
+    font-size: 16px;
+}
+
+/* Eye icon in both modes */
+.pin-container i {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #555;
+    margin-left: 10px; /* Space between PIN and icon */
+    display: inline-block; /* Ensure visibility in both modes */
+}
+
+
+/* Show the eye icon in view mode */
+.masked-id + i {
+    display: inline-block; /* Show icon only in view mode */
+}
+
+/* Additional pin container styling */
+.pin-container .masked-id {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px; /* Space between PIN and the icon */
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding-right: 35px; /* space for icon */
+}
+
+.input-with-icon i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #555;
+}
+
+
