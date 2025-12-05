@@ -6,6 +6,7 @@ import com.medicaidProject.medicaidProject.modles.States;
 import com.medicaidProject.medicaidProject.modles.data.AddressDao;
 import com.medicaidProject.medicaidProject.modles.data.EmployerDao;
 import com.medicaidProject.medicaidProject.modles.data.StatesDao;
+import com.medicaidProject.medicaidProject.modles.data.UserEmploymentInfoDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ import java.util.List;
 
         @Autowired
         private StatesDao statesDao;
+
+        @Autowired
+        private UserEmploymentInfoDao userEmploymentInfoDao;
 
         public List<States> getStates() {
         return statesDao.findAll();
@@ -171,6 +175,24 @@ import java.util.List;
             addressDao.save(address);
 
             return "redirect:/employer/employer-dashboard";
+        }
+
+        // -------------------- EMPLOYER APPLICANT VIEW --------------------
+
+        @GetMapping("employer-applicant-view")
+        public String employerApplicantView(HttpSession session, Model model){
+
+            Employer employer = (Employer) session.getAttribute("employer");
+
+            //UserEmploymentInfo userEmploymentInfo;
+
+            if (employer == null) {
+                return "redirect:employer/login";
+            }
+
+            model.addAttribute("employer", employer);
+
+            return "employer/employer-applicant-view";
         }
         // -------------------- LOGOUT --------------------
         @GetMapping("logout")
