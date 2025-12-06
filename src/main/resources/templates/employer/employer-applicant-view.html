@@ -1,0 +1,215 @@
+<!-- Developed by Bhatti Rajwinder -->
+<!-- Updated by Dana Paquet -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/employerApplicantView.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Employer Sign up</title>
+</head>
+<body>
+<header>
+    Missouri Medicaid Employment Verification Portal
+</header>
+<nav>
+    <a class="navbar-brand" th:href="@{/employer/employer-dashboard}">Dashboard</a>
+    <a class="nav-link" th:href="@{/employer/employer-applicant-view}">Employment Verification</a>
+    <a class="nav-link" th:href="@{/employer/logout}">Log Out</a>
+</nav>
+<div class="container">
+    <div class="info-card">
+        <p><strong>Employer:</strong> <span th:text="${employer.employerName}">Employer Name</span></p>
+        <p><strong>Tax ID:</strong> <span th:text="${employer.employerTaxId}">Tax ID</span></p>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search by name, email, or phone..." />
+        <select id="statusFilter">
+            <option value="all">All Statuses</option>
+            <option value="verified">Verified</option>
+            <option value="pending">Pending</option>
+            <option value="denied">Denied</option>
+        </select>
+        <button onclick="refreshTable()">Refresh</button>
+        <button onclick="exportCSV()">Export CSV</button>
+    </div>
+
+    <div id="rowCount"></div>
+
+    <table id="employeeTable">
+        <thead>
+        <tr>
+            <th data-key="firstName">FIRST NAME</th>
+            <th data-key="lastName">LAST NAME</th>
+            <th data-key="dob">DOB</th>
+            <th data-key="email">EMAIL</th>
+            <th data-key="phone">PHONE NUMBER</th>
+            <th data-key="status">VERIFICATION STATUS</th>
+            <th>ACTIONS</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div id="pagination"></div>
+</div>
+
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h3>Employee Details</h3>
+        <div class="modal-section">
+            <p><strong>Name:</strong> <span id="modalName"></span></p>
+            <p><strong>Date of Birth:</strong> <span id="modalDOB"></span></p>
+            <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+            <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+        </div>
+    </div>
+</div>
+
+<script>
+const employees = [
+  { firstName:"John", lastName:"Doe", dob:"03/15/1990", email:"john.doe@email.com", phone:"(555) 123-4567", status:"verified" },
+  { firstName:"Jane", lastName:"Smith", dob:"07/22/1985", email:"jane.smith@email.com", phone:"(555) 987-6543", status:"pending" },
+  { firstName:"Mark", lastName:"Allen", dob:"01/05/1992", email:"mark.allen@email.com", phone:"(555) 765-4321", status:"denied" },
+  { firstName:"Emily", lastName:"Brown", dob:"05/12/1988", email:"emily.brown@email.com", phone:"(555) 234-5678", status:"verified" },
+  { firstName:"Michael", lastName:"Johnson", dob:"11/30/1979", email:"michael.johnson@email.com", phone:"(555) 345-6789", status:"pending" },
+  { firstName:"Sarah", lastName:"Davis", dob:"09/17/1991", email:"sarah.davis@email.com", phone:"(555) 456-7890", status:"verified" },
+  { firstName:"David", lastName:"Wilson", dob:"02/08/1983", email:"david.wilson@email.com", phone:"(555) 567-8901", status:"denied" },
+  { firstName:"Laura", lastName:"Martinez", dob:"06/25/1995", email:"laura.martinez@email.com", phone:"(555) 678-9012", status:"pending" }
+];
+
+let currentPage = 1;
+const rowsPerPage = 5;
+let sortKey = null;
+let sortAsc = true;
+
+function capitalize(str){ return str.charAt(0).toUpperCase() + str.slice(1); }
+function paginate(filtered){ const start=(currentPage-1)*rowsPerPage; return filtered.slice(start,start+rowsPerPage); }
+
+function renderTable(){
+  const tbody=document.querySelector("#employeeTable tbody");
+  const search=document.getElementById("searchInput").value.toLowerCase();
+  const filter=document.getElementById("statusFilter").value;
+  tbody.innerHTML="";
+
+  let filtered=employees.filter(emp=>{
+    const matchesSearch=emp.firstName.toLowerCase().includes(search)||
+                        emp.lastName.toLowerCase().includes(search)||
+                        emp.email.toLowerCase().includes(search)||
+                        emp.phone.toLowerCase().includes(search);
+    const matchesStatus=filter==="all"||emp.status===filter;
+    return matchesSearch && matchesStatus;
+  });
+
+  if(sortKey){
+    filtered.sort((a,b)=>{
+      let valA=a[sortKey].toLowerCase();
+      let valB=b[sortKey].toLowerCase();
+      if(sortKey==="dob"){ valA=new Date(a.dob); valB=new Date(b.dob); }
+      if(valA<valB) return sortAsc?-1:1;
+      if(valA>valB) return sortAsc?1:-1;
+      return 0;
+    });
+  }
+
+  const paginated=paginate(filtered);
+
+  // Update row count
+  const startRow=(filtered.length===0)?0:(currentPage-1)*rowsPerPage+1;
+  const endRow=(currentPage*rowsPerPage>filtered.length)?filtered.length:currentPage*rowsPerPage;
+  document.getElementById("rowCount").textContent=`Showing ${startRow}–${endRow} of ${filtered.length} employees`;
+
+  paginated.forEach(emp=>{
+    const row=document.createElement("tr");
+    row.innerHTML=`
+      <td>${emp.firstName}</td>
+      <td>${emp.lastName}</td>
+      <td>${emp.dob}</td>
+      <td>${emp.email}</td>
+      <td>${emp.phone}</td>
+      <td class="status ${emp.status}">${capitalize(emp.status)}</td>
+      <td><button class="action-btn" onclick='openModal(${JSON.stringify(emp)})'>View Details</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  renderPagination(filtered.length);
+  updateSortIndicators();
+}
+
+function updateSortIndicators(){
+  document.querySelectorAll("th[data-key]").forEach(th=>{
+    th.classList.remove("sort-asc","sort-desc");
+    if(sortKey===th.dataset.key){ th.classList.add(sortAsc?"sort-asc":"sort-desc"); }
+  });
+}
+
+function renderPagination(totalRows){
+  const pagination=document.getElementById("pagination");
+  pagination.innerHTML="";
+  const totalPages=Math.ceil(totalRows/rowsPerPage);
+
+  const prevBtn=document.createElement("button");
+  prevBtn.textContent="Previous";
+  prevBtn.disabled=currentPage===1;
+  prevBtn.onclick=()=>{ currentPage=Math.max(1,currentPage-1); renderTable(); };
+  pagination.appendChild(prevBtn);
+
+  for(let i=1;i<=totalPages;i++){
+    const btn=document.createElement("button");
+    btn.textContent=i;
+    btn.className=i===currentPage?"active":"";
+    btn.onclick=()=>{ currentPage=i; renderTable(); };
+    pagination.appendChild(btn);
+  }
+
+  const nextBtn=document.createElement("button");
+  nextBtn.textContent="Next";
+  nextBtn.disabled=currentPage===totalPages;
+  nextBtn.onclick=()=>{ currentPage=Math.min(totalPages,currentPage+1); renderTable(); };
+  pagination.appendChild(nextBtn);
+}
+
+function refreshTable(){ document.getElementById("searchInput").value=""; document.getElementById("statusFilter").value="all"; currentPage=1; renderTable(); }
+
+function exportCSV(){
+  const csvContent=[["First Name","Last Name","DOB","Email","Phone","Status"],...employees.map(e=>[e.firstName,e.lastName,e.dob,e.email,e.phone,e.status])].map(r=>r.join(",")).join("\n");
+  const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="employees.csv";
+  link.click();
+}
+
+const modal=document.getElementById("detailModal");
+function openModal(emp){
+  document.getElementById("modalName").textContent=emp.firstName+" "+emp.lastName;
+  document.getElementById("modalDOB").textContent=emp.dob;
+  document.getElementById("modalEmail").textContent=emp.email;
+  document.getElementById("modalPhone").textContent=emp.phone;
+  const statusEl=document.getElementById("modalStatus");
+  statusEl.textContent=capitalize(emp.status);
+  statusEl.className=emp.status;
+  modal.classList.add("show");
+}
+function closeModal(){ modal.classList.remove("show"); setTimeout(()=>{ modal.style.display="none"; },300); }
+window.onclick=(event)=>{ if(event.target==modal) closeModal(); }
+
+document.getElementById("searchInput").addEventListener("input",()=>{ currentPage=1; renderTable(); });
+document.getElementById("statusFilter").addEventListener("change",()=>{ currentPage=1; renderTable(); });
+
+document.querySelectorAll("th[data-key]").forEach(th=>{
+  th.addEventListener("click",()=>{
+    if(sortKey===th.dataset.key){ sortAsc=!sortAsc; } else { sortKey=th.dataset.key; sortAsc=true; }
+    renderTable();
+  });
+});
+
+renderTable();
+</script>
+</body>
+</html>
